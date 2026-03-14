@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Complaint</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+    }
+
+    .subtext {
+      margin: 0 0 18px;
+      color: #4b5563;
+      font-size: 0.95rem;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .field-row:first-of-type {
+      border-top: 0;
+    }
+
+    .field-label {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.92rem;
+      padding-top: 6px;
+    }
+
+    .field-content {
+      min-height: 34px;
+      padding-top: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .field-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+      color: #1a1a1a;
+    }
+
+    .edit-btn {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 6px 10px;
+      font: inherit;
+      cursor: pointer;
+      color: #111827;
+    }
+
+    .file-btn {
+      width: 100%;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #16a34a;
+      color: #ffffff;
+      padding: 13px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .file-btn:disabled {
+      opacity: 0.75;
+      cursor: default;
+    }
+
+    .start-over {
+      margin-top: 14px;
+      display: inline-block;
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .error {
+      margin-top: 12px;
+      color: #b91c1c;
+      min-height: 20px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 640px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .field-label,
+      .field-content {
+        padding-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>Verify Your Complaint</h1>
+      <p class="subtext">This is a legacy review screen. The current supported filing path starts from chat.</p>
+
+      <div class="field-row" data-field="complainant_name">
+        <div class="field-label">Full Name</div>
+        <div class="field-content"><span class="field-value">{{ complainant_name }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="complainant_email">
+        <div class="field-label">Email</div>
+        <div class="field-content"><span class="field-value">{{ complainant_email }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="complainant_phone">
+        <div class="field-label">Phone</div>
+        <div class="field-content"><span class="field-value">{{ complainant_phone }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="complaint_against">
+        <div class="field-label">Complaint Against</div>
+        <div class="field-content"><span class="field-value">{{ complaint_against }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="complaint_type">
+        <div class="field-label">Type</div>
+        <div class="field-content"><span class="field-value">{{ complaint_type }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="incident_date">
+        <div class="field-label">Date</div>
+        <div class="field-content"><span class="field-value">{{ incident_date }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="incident_description">
+        <div class="field-label">Description</div>
+        <div class="field-content"><span class="field-value">{{ incident_description }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="desired_outcome">
+        <div class="field-label">Desired Outcome</div>
+        <div class="field-content"><span class="field-value">{{ desired_outcome }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="reference_number">
+        <div class="field-label">Reference Number</div>
+        <div class="field-content"><span class="field-value">{{ reference_number }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <div class="field-row" data-field="nric">
+        <div class="field-label">NRIC / FIN</div>
+        <div class="field-content"><span class="field-value">{{ nric }}</span></div>
+        <button type="button" class="edit-btn" data-mode="edit">Edit</button>
+      </div>
+
+      <button id="fileButton" class="file-btn" type="button">Continue In Chat</button>
+      <div id="errorMessage" class="error"></div>
+      <a class="start-over" href="/">Start Over</a>
+    </section>
+  </main>
+
+  <script>
+    function toggleEdit(row, button) {
+      const content = row.querySelector(".field-content");
+      if (button.dataset.mode === "edit") {
+        const currentValue = content.textContent.trim();
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "field-input";
+        input.value = currentValue;
+        content.innerHTML = "";
+        content.appendChild(input);
+        button.dataset.mode = "save";
+        button.textContent = "Save";
+        input.focus();
+        return;
+      }
+
+      const input = content.querySelector(".field-input");
+      const nextValue = input ? input.value.trim() : "";
+      content.innerHTML = "";
+      const span = document.createElement("span");
+      span.className = "field-value";
+      span.textContent = nextValue;
+      content.appendChild(span);
+      button.dataset.mode = "edit";
+      button.textContent = "Edit";
+    }
+
+    function readFieldValue(row) {
+      const input = row.querySelector(".field-input");
+      if (input) {
+        return input.value.trim();
+      }
+      const span = row.querySelector(".field-value");
+      return span ? span.textContent.trim() : "";
+    }
+
+    document.querySelectorAll(".field-row .edit-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const row = button.closest(".field-row");
+        if (!row) {
+          return;
+        }
+        toggleEdit(row, button);
+      });
+    });
+
+    document.getElementById("fileButton").addEventListener("click", async () => {
+      const fileButton = document.getElementById("fileButton");
+      const errorMessage = document.getElementById("errorMessage");
+      errorMessage.textContent = "";
+      fileButton.disabled = true;
+
+      const payload = {};
+      document.querySelectorAll(".field-row").forEach((row) => {
+        const key = row.dataset.field;
+        payload[key] = readFieldValue(row);
+      });
+
+      try {
+        sessionStorage.setItem("grippyyy_verify_payload", JSON.stringify(payload));
+        window.location.href = "/chat?new=1";
+      } catch (error) {
+        errorMessage.textContent = "Could not continue in chat. Please try again.";
+        fileButton.disabled = false;
+        return;
+      }
+    });
+  </script>
+</body>
+</html>

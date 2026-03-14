@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grippy — Filing Your Complaint</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-start: #f0f4ff;
+      --bg-end: #f8fafc;
+      --white: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --body: #374151;
+      --line: #d1d5db;
+      --track: #e5e7eb;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #ef4444;
+      --purple: #7c3aed;
+      --success-bg: #dcfce7;
+      --success-text: #166534;
+      --danger-bg: #fee2e2;
+      --danger-text: #991b1b;
+      --card-radius: 16px;
+      --terminal-radius: 20px;
+      --transition: 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(30px);
+      opacity: 0.5;
+    }
+
+    body::before {
+      width: 280px;
+      height: 280px;
+      top: -90px;
+      right: 8%;
+      background: rgba(37, 99, 235, 0.18);
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      bottom: -60px;
+      left: 10%;
+      background: rgba(124, 58, 237, 0.14);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-brand {
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid rgba(17, 24, 39, 0.1);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+    }
+
+    .page-brand-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .brand-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #111827;
+    }
+
+    .brand-sub {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .live-layout {
+      display: grid;
+      grid-template-columns: 45% 55%;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .left-card {
+      background: var(--white);
+      border-radius: var(--card-radius);
+      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.1);
+      padding: 28px;
+      height: 760px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .ring-section {
+      text-align: center;
+    }
+
+    .ring-wrap {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .ring-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: #e5e7eb;
+      stroke-width: 10;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      transition: stroke-dashoffset 0.8s ease;
+    }
+
+    .ring-percent {
+      position: absolute;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .ring-label {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stepper-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stepper {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      align-items: center;
+      row-gap: 12px;
+    }
+
+    .stage-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .stage-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 2px solid var(--line);
+      background: var(--white);
+      position: relative;
+      display: grid;
+      place-items: center;
+      transition: var(--transition);
+    }
+
+    .stage-check {
+      width: 20px;
+      height: 20px;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .stage-check path {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .stage-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      opacity: 0;
+      transform: scale(1);
+    }
+
+    .stage-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+      max-width: 74px;
+    }
+
+    .stage-line {
+      height: 2px;
+      width: 100%;
+      background: var(--line);
+      border-radius: 999px;
+      transition: var(--transition);
+    }
+
+    .stage-node.completed .stage-circle {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .stage-node.completed .stage-check {
+      opacity: 1;
+    }
+
+    .stage-node.active .stage-circle {
+      background: var(--blue);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.18);
+    }
+
+    .stage-node.active .stage-dot {
+      opacity: 1;
+      animation: pulseInner 1.2s infinite;
+    }
+
+    .stage-line.active {
+      background: var(--blue);
+    }
+
+    .stage-line.completed {
+      background: var(--green);
+    }
+
+    @keyframes pulseInner {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.3);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .status-line {
+      margin: 0;
+      text-align: center;
+      font-size: 15px;
+      color: var(--body);
+      font-style: italic;
+      min-height: 24px;
+      padding: 6px 10px;
+    }
+
+    .right-stack {
+      height: 760px;
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.1);
+      background: var(--white);
+    }
+
+    .quiz-banner {
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-banner::after {
+      content: "";
+      position: absolute;
+      top: -10%;
+      left: -45%;
+      width: 40%;
+      height: 120%;
+      background: linear-gradient(110deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+      transform: skewX(-20deg);
+      animation: bannerShimmer 3s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes bannerShimmer {
+      0% {
+        left: -50%;
+      }
+      100% {
+        left: 120%;
+      }
+    }
+
+    .banner-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .banner-pill {
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.12);
+      white-space: nowrap;
+    }
+
+    .quiz-body {
+      flex: 1;
+      padding: 24px;
+      border-radius: 0 0 var(--card-radius) var(--card-radius);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
+      overflow: hidden;
+      position: relative;
+      border-radius: 0 0 16px 16px;
+    }
+
+    .quiz-body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quiz-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .quiz-score {
+      margin: 0;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .quiz-metrics {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quiz-streak {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f59e0b;
+      white-space: nowrap;
+    }
+
+    .quiz-streak.hot {
+      animation: streakPulse 0.6s infinite;
+    }
+
+    @keyframes streakPulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .quiz-progress-track {
+      width: 100%;
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .question-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .question-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .question-text {
+      margin: 0;
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+      padding: 16px 0 20px 0;
+    }
+
+    .answer-buttons {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--body);
+      padding: 14px;
+      min-height: 56px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-align: center;
+    }
+
+    @keyframes bounce {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.08);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .answer-btn.bounce {
+      animation: bounce 0.2s ease;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      border-color: var(--blue);
+      background: #eff6ff;
+    }
+
+    .answer-btn:disabled {
+      cursor: default;
+    }
+
+    .answer-btn.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #166534;
+    }
+
+    .answer-btn.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .explanation {
+      display: none;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--body);
+      background: #f9fafb;
+      border-left: 3px solid var(--blue);
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      line-height: 1.5;
+    }
+
+    .explanation.visible {
+      display: block;
+    }
+
+    .quiz-results {
+      display: none;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    .quiz-results.visible {
+      display: flex;
+    }
+
+    .result-score {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .bonus-badge {
+      display: none;
+      background: #dcfce7;
+      border: 2px solid #16a34a;
+      border-radius: 12px;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #166534;
+    }
+
+    .bonus-code {
+      display: none;
+      margin: 0;
+      font-size: 13px;
+      color: var(--body);
+      line-height: 1.5;
+    }
+
+    .retry-message {
+      display: none;
+      margin: 0;
+      font-size: 15px;
+      color: var(--body);
+      line-height: 1.5;
+    }
+
+    .retry-btn {
+      display: none;
+      border: none;
+      background: var(--blue);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .retry-btn:hover {
+      filter: brightness(0.95);
+    }
+
+    .terminal {
+      display: none;
+      min-height: calc(100vh - 68px);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal-card {
+      width: 100%;
+      background: var(--white);
+      border-radius: var(--terminal-radius);
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .success-state .terminal-card {
+      max-width: 560px;
+      box-shadow: 0 8px 40px rgba(22, 163, 74, 0.15);
+    }
+
+    .error-state .terminal-card {
+      max-width: 480px;
+      box-shadow: 0 8px 40px rgba(239, 68, 68, 0.12);
+    }
+
+    .success-check {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+    }
+
+    .success-check svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .success-check circle,
+    .success-check path {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .success-check circle {
+      stroke: #86efac;
+      stroke-width: 5;
+      stroke-dasharray: 238;
+      stroke-dashoffset: 238;
+      animation: drawCircle 0.55s ease forwards;
+    }
+
+    .success-check path {
+      stroke: #16a34a;
+      stroke-width: 6;
+      stroke-dasharray: 74;
+      stroke-dashoffset: 74;
+      animation: drawTick 0.45s ease 0.45s forwards;
+    }
+
+    @keyframes drawCircle {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes drawTick {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .terminal-title {
+      margin: 16px 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .confirmation-label {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .confirmation-box {
+      margin: 10px auto 0;
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 14px 20px;
+      letter-spacing: 0.5px;
+      word-break: break-word;
+    }
+
+    .success-fallback {
+      margin: 10px 0 0;
+      font-size: 15px;
+      color: var(--body);
+      line-height: 1.5;
+    }
+
+    .terminal-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-link,
+    .btn-copy,
+    .btn-escalate {
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-link {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: var(--body);
+    }
+
+    .btn-copy {
+      border: none;
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-escalate {
+      border: none;
+      background: #f97316;
+      color: #ffffff;
+    }
+
+    .btn-escalate:disabled {
+      opacity: 0.75;
+      cursor: default;
+    }
+
+    .escalate-status {
+      margin: 12px 0 0;
+      min-height: 20px;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .verify-section {
+      margin: 24px 0;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .verify-title {
+      margin: 0;
+      font-size: 14px;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .verify-message {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 999px;
+      background: #fee2e2;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .error-icon::before,
+    .error-icon::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 4px;
+      background: #ef4444;
+      border-radius: 2px;
+    }
+
+    .error-icon::before {
+      transform: rotate(45deg);
+    }
+
+    .error-icon::after {
+      transform: rotate(-45deg);
+    }
+
+    .error-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .error-message {
+      margin: 12px 0 0;
+      font-size: 15px;
+      color: var(--body);
+      line-height: 1.5;
+    }
+
+    .error-btn {
+      margin-top: 20px;
+      display: inline-flex;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      background: #ef4444;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .confetti-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+      display: none;
+    }
+
+    .confetti {
+      position: absolute;
+      top: -20px;
+      width: 8px;
+      height: 8px;
+      opacity: 0;
+      animation: confettiDrop 2.5s ease forwards;
+    }
+
+    @keyframes confettiDrop {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(540px) rotate(540deg);
+        opacity: 0;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 20px 24px 28px;
+      }
+
+      .live-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .left-card,
+      .right-stack {
+        height: auto;
+      }
+
+      .terminal {
+        min-height: calc(100vh - 48px);
+      }
+
+      .terminal-card {
+        padding: 28px 20px;
+      }
+
+      .terminal-actions {
+        flex-direction: column;
+      }
+
+      .btn-link,
+      .btn-copy,
+      .btn-escalate,
+      .error-btn {
+        width: 100%;
+      }
+
+      .quiz-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .banner-pill {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-brand">
+    <div class="page-brand-inner">
+      <div class="brand-logo">Grippy</div>
+      <div class="brand-sub">Just grip it.</div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="liveLayout" class="live-layout">
+      <section class="left-card">
+        <div class="ring-section">
+          <div class="ring-wrap" aria-hidden="true">
+            <svg viewBox="0 0 160 160">
+              <circle class="ring-track" cx="80" cy="80" r="70"></circle>
+              <circle id="ringProgress" class="ring-progress" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div id="ringPercent" class="ring-percent">0%</div>
+          </div>
+          <div class="ring-label">Filing in progress...</div>
+        </div>
+
+        <div class="stepper-section">
+          <div class="stepper">
+            <div id="stageNode1" class="stage-node">
+              <div class="stage-circle">
+                <svg class="stage-check" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="stage-dot" aria-hidden="true"></span>
+              </div>
+              <div class="stage-label">Connecting</div>
+            </div>
+            <span id="stageLine1" class="stage-line"></span>
+
+            <div id="stageNode2" class="stage-node">
+              <div class="stage-circle">
+                <svg class="stage-check" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="stage-dot" aria-hidden="true"></span>
+              </div>
+              <div class="stage-label">Navigating</div>
+            </div>
+            <span id="stageLine2" class="stage-line"></span>
+
+            <div id="stageNode3" class="stage-node">
+              <div class="stage-circle">
+                <svg class="stage-check" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="stage-dot" aria-hidden="true"></span>
+              </div>
+              <div class="stage-label">Filling details</div>
+            </div>
+            <span id="stageLine3" class="stage-line"></span>
+
+            <div id="stageNode4" class="stage-node">
+              <div class="stage-circle">
+                <svg class="stage-check" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="stage-dot" aria-hidden="true"></span>
+              </div>
+              <div class="stage-label">Submitting</div>
+            </div>
+          </div>
+        </div>
+
+        <p id="statusLine" class="status-line">Connecting to filing agent...</p>
+      </section>
+
+      <section class="right-stack">
+        <header class="quiz-banner">
+          <p class="banner-title">🎯 Score 7/10 or higher → Earn a FREE bonus complaint</p>
+          <span class="banner-pill">Limited offer</span>
+        </header>
+
+        <div class="quiz-body">
+          <div class="quiz-header">
+            <h2 class="quiz-title">Consumer Rights Quiz</h2>
+            <div class="quiz-metrics">
+              <p id="quizStreak" class="quiz-streak hidden">🔥 0</p>
+              <p id="quizScore" class="quiz-score">Score: 0 / 10</p>
+            </div>
+          </div>
+
+          <section id="questionArea" class="question-area">
+            <p id="questionLabel" class="question-label"></p>
+            <div class="quiz-progress-track">
+              <div id="quizProgressFill" class="quiz-progress-fill"></div>
+            </div>
+            <p id="questionText" class="question-text"></p>
+
+            <div class="answer-buttons">
+              <button id="btnTrue" class="answer-btn" type="button">True</button>
+              <button id="btnFalse" class="answer-btn" type="button">False</button>
+            </div>
+
+            <div id="explanation" class="explanation"></div>
+          </section>
+
+          <section id="quizResults" class="quiz-results">
+            <p id="resultScore" class="result-score"></p>
+            <div id="bonusBadge" class="bonus-badge">🎉 You earned a FREE bonus complaint!</div>
+            <p id="bonusCode" class="bonus-code"></p>
+            <p id="retryMessage" class="retry-message"></p>
+            <button id="retryQuizButton" class="retry-btn" type="button">Try the quiz again</button>
+          </section>
+        </div>
+      </section>
+    </section>
+
+    <section id="successState" class="terminal success-state" aria-live="polite">
+      <div id="confettiLayer" class="confetti-layer"></div>
+      <article class="terminal-card">
+        <div class="success-check" aria-hidden="true">
+          <svg viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="38"></circle>
+            <path d="M22 41 L34 53 L58 29"></path>
+          </svg>
+        </div>
+
+        <h2 class="terminal-title">Complaint Filed!</h2>
+        <p class="confirmation-label">Confirmation Number:</p>
+        <div id="confirmationBox" class="confirmation-box"></div>
+        <p id="successFallback" class="success-fallback hidden">Your complaint has been submitted. Check your email for confirmation.</p>
+
+        <div class="terminal-actions">
+          <a href="/" class="btn-link">File Another Complaint</a>
+          <button id="copyConfirmationButton" class="btn-copy" type="button">Copy Confirmation Number</button>
+          <button id="escalateButton" class="btn-escalate" type="button">Escalate to Regulator</button>
+        </div>
+        <p id="escalateStatus" class="escalate-status"></p>
+
+        <section class="verify-section">
+          <p id="verifyTitle" class="verify-title">Complaint update</p>
+          <p id="verifyMessage" class="verify-message">Your complaint has been submitted successfully.</p>
+        </section>
+      </article>
+    </section>
+
+    <section id="errorState" class="terminal error-state" aria-live="polite">
+      <article class="terminal-card">
+        <div class="error-icon" aria-hidden="true"></div>
+        <h2 class="error-title">Something went wrong</h2>
+        <p id="errorMessage" class="error-message">An unexpected error occurred. Please try again.</p>
+        <a href="/" class="error-btn">Try Again</a>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const QUIZ_QUESTIONS = [
+      {
+        question: "In Singapore, you can return any item within 7 days for a full refund.",
+        answer: false,
+        explanation: "Singapore has no mandatory cooling-off period for retail purchases. Refund policies are set by the retailer.",
+      },
+      {
+        question: "CASE mediation in Singapore is completely free for consumers.",
+        answer: true,
+        explanation: "CASE charges no fees for mediation. You just file the complaint and they handle it.",
+      },
+      {
+        question: "A business must give you a receipt if you ask for one.",
+        answer: true,
+        explanation: "Under the Consumer Protection (Fair Trading) Act, businesses must provide proof of purchase on request.",
+      },
+      {
+        question: "If a price tag shows the wrong price, the shop must sell it to you at that price.",
+        answer: false,
+        explanation: "Shops are not legally required to honour pricing errors. But they must not use misleading prices intentionally.",
+      },
+      {
+        question: "You can cancel a contract signed during a door-to-door sale within 5 business days.",
+        answer: true,
+        explanation: "Singapore's Lemon Law gives you a 5-day cooling-off period for unsolicited door-to-door contracts.",
+      },
+      {
+        question: "Online sellers in Singapore are not covered by consumer protection laws.",
+        answer: false,
+        explanation: "The Consumer Protection (Fair Trading) Act applies to online sellers operating in Singapore.",
+      },
+      {
+        question: "If a product causes injury, you can claim compensation even without a receipt.",
+        answer: true,
+        explanation: "Product liability claims do not require a receipt. Other evidence of purchase can be used.",
+      },
+      {
+        question: "A warranty is only valid if you register the product online.",
+        answer: false,
+        explanation: "Statutory warranties under Singapore law apply automatically. Registration may add extra benefits but is not required.",
+      },
+      {
+        question: "CASE can help you with complaints against foreign companies that sold to you in Singapore.",
+        answer: true,
+        explanation: "If the transaction happened in Singapore, CASE has jurisdiction regardless of where the company is registered.",
+      },
+      {
+        question: "You have 2 years to file a complaint about a faulty product under Singapore's Lemon Law.",
+        answer: true,
+        explanation: "Singapore's Lemon Law gives consumers 2 years from purchase to claim for defects.",
+      },
+    ];
+
+    const STAGE_NODES = [
+      document.getElementById("stageNode1"),
+      document.getElementById("stageNode2"),
+      document.getElementById("stageNode3"),
+      document.getElementById("stageNode4"),
+    ];
+
+    const STAGE_LINES = [
+      document.getElementById("stageLine1"),
+      document.getElementById("stageLine2"),
+      document.getElementById("stageLine3"),
+    ];
+
+    const runId = new URLSearchParams(window.location.search).get("run_id");
+
+    const liveLayout = document.getElementById("liveLayout");
+    const successState = document.getElementById("successState");
+    const errorState = document.getElementById("errorState");
+    const errorMessage = document.getElementById("errorMessage");
+
+    const statusLine = document.getElementById("statusLine");
+    const ringProgress = document.getElementById("ringProgress");
+    const ringPercent = document.getElementById("ringPercent");
+
+    const quizStreak = document.getElementById("quizStreak");
+    const quizScore = document.getElementById("quizScore");
+    const quizProgressFill = document.getElementById("quizProgressFill");
+    const questionArea = document.getElementById("questionArea");
+    const questionLabel = document.getElementById("questionLabel");
+    const questionText = document.getElementById("questionText");
+    const btnTrue = document.getElementById("btnTrue");
+    const btnFalse = document.getElementById("btnFalse");
+    const explanation = document.getElementById("explanation");
+
+    const quizResults = document.getElementById("quizResults");
+    const resultScore = document.getElementById("resultScore");
+    const bonusBadge = document.getElementById("bonusBadge");
+    const bonusCode = document.getElementById("bonusCode");
+    const retryMessage = document.getElementById("retryMessage");
+    const retryQuizButton = document.getElementById("retryQuizButton");
+
+    const confirmationBox = document.getElementById("confirmationBox");
+    const successFallback = document.getElementById("successFallback");
+    const verifyTitle = document.getElementById("verifyTitle");
+    const verifyMessage = document.getElementById("verifyMessage");
+    const copyConfirmationButton = document.getElementById("copyConfirmationButton");
+    const escalateButton = document.getElementById("escalateButton");
+    const escalateStatus = document.getElementById("escalateStatus");
+    const confettiLayer = document.getElementById("confettiLayer");
+
+    let eventSource = null;
+    let quizAdvanceTimer = null;
+
+    let terminalReached = false;
+    let terminalTransitioning = false;
+    let progressCount = 0;
+    let currentStage = 0;
+
+    let quizIndex = 0;
+    let score = 0;
+    let streak = 0;
+
+    let currentConfirmation = "Not provided";
+    const RING_CIRCUMFERENCE = 440;
+    const RING_ANIMATION_MS = 60000;
+    const RING_COMPLETE_ANIMATION_MS = 1000;
+    let ringAnimationFrame = null;
+    let ringAnimationStart = null;
+    let ringCompleting = false;
+
+    function normalize(value) {
+      return String(value || "").toUpperCase();
+    }
+
+    function resetStageVisuals() {
+      STAGE_NODES.forEach((node) => {
+        node.classList.remove("completed", "active");
+      });
+      STAGE_LINES.forEach((line) => {
+        line.classList.remove("active", "completed");
+      });
+    }
+
+    function setStageState(completedCount, activeStage) {
+      resetStageVisuals();
+
+      STAGE_NODES.forEach((node, idx) => {
+        const stageNum = idx + 1;
+        if (stageNum <= completedCount) {
+          node.classList.add("completed");
+        }
+        if (stageNum === activeStage) {
+          node.classList.add("active");
+        }
+      });
+
+      STAGE_LINES.forEach((line, idx) => {
+        const fromStage = idx + 1;
+        if (fromStage < activeStage) {
+          line.classList.add("active");
+        }
+        if (fromStage <= completedCount - 1) {
+          line.classList.remove("active");
+          line.classList.add("completed");
+        }
+      });
+
+      currentStage = activeStage;
+    }
+
+    function completeAllStages() {
+      setStageState(4, 0);
+    }
+
+    function setRingPercent(percent) {
+      const safePercent = Math.max(0, Math.min(100, percent));
+      ringPercent.textContent = `${Math.round(safePercent)}%`;
+      const offset = RING_CIRCUMFERENCE * (1 - safePercent / 100);
+      ringProgress.style.strokeDashoffset = `${offset}`;
+    }
+
+    function stopRingAnimation(forceComplete = false) {
+      if (ringAnimationFrame !== null) {
+        cancelAnimationFrame(ringAnimationFrame);
+        ringAnimationFrame = null;
+      }
+      if (forceComplete) {
+        setRingPercent(100);
+      }
+    }
+
+    function runRingAnimation(timestamp) {
+      if (terminalReached) {
+        return;
+      }
+      if (ringAnimationStart === null) {
+        ringAnimationStart = timestamp;
+      }
+      const elapsed = timestamp - ringAnimationStart;
+      const percent = Math.min((elapsed / RING_ANIMATION_MS) * 100, 100);
+      setRingPercent(percent);
+      if (percent < 100) {
+        ringAnimationFrame = requestAnimationFrame(runRingAnimation);
+      }
+    }
+
+    function startRingAnimation() {
+      stopRingAnimation(false);
+      ringAnimationStart = null;
+      ringAnimationFrame = requestAnimationFrame(runRingAnimation);
+    }
+
+    function stopAllTimers() {
+      if (quizAdvanceTimer) {
+        clearTimeout(quizAdvanceTimer);
+        quizAdvanceTimer = null;
+      }
+    }
+
+    function parseEventPayload(raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function isHeartbeat(event) {
+      const eventType = normalize(event.type);
+      const purpose = normalize(event.purpose || "");
+      return eventType === "HEARTBEAT" || purpose.includes("HEARTBEAT");
+    }
+
+    function extractConfirmation(event) {
+      const direct = event && event.confirmation_number;
+      const nested = event && event.resultJson && event.resultJson.confirmation_number;
+      const result = direct || nested || "Not provided";
+      return String(result || "Not provided");
+    }
+
+    function extractCompletionSummary(event, confirmation) {
+      const resultJson = event && event.resultJson && typeof event.resultJson === "object"
+        ? event.resultJson
+        : {};
+      const rawStage = String(resultJson.stage || "").trim().toLowerCase();
+      let stage = rawStage;
+      let method = String(resultJson.method || resultJson.mode || "").trim().toLowerCase();
+
+      let targetName = String(resultJson.target_name || "").trim();
+      if (!targetName) {
+        const confirmationMatch = String(confirmation || "").match(/Complaint sent to\s+([^\.]+)\./i);
+        if (confirmationMatch && confirmationMatch[1]) {
+          targetName = confirmationMatch[1].trim();
+        }
+      }
+
+      if (!stage) {
+        const confirmationText = String(confirmation || "").toLowerCase();
+        if (confirmationText.includes("consult@case.org.sg")) {
+          stage = "regulator";
+        } else if (confirmationText.includes("complaint sent to")) {
+          stage = "company";
+        } else if (method === "web_form") {
+          stage = "company";
+        }
+      }
+
+      if (!method) {
+        const confirmationText = String(confirmation || "").toLowerCase();
+        if (confirmationText.includes("complaint sent to")) {
+          method = "email";
+        } else if (resultJson.confirmation_number || resultJson.confirmation) {
+          method = "web_form";
+        }
+      }
+
+      if (!targetName && method === "web_form") {
+        targetName = "CASE Singapore portal";
+      }
+      if (!targetName && stage === "regulator") {
+        targetName = "the regulator";
+      }
+      if (!targetName && stage === "company") {
+        targetName = "the company";
+      }
+
+      return { stage, targetName, method };
+    }
+
+    function launchConfetti() {
+      const colors = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#8b5cf6"];
+      confettiLayer.innerHTML = "";
+      confettiLayer.style.display = "block";
+
+      for (let i = 0; i < 20; i += 1) {
+        const bit = document.createElement("span");
+        bit.className = "confetti";
+        bit.style.left = `${Math.random() * 98}%`;
+        bit.style.background = colors[i % colors.length];
+        bit.style.animationDelay = `${i * 0.09}s`;
+        confettiLayer.appendChild(bit);
+      }
+
+      setTimeout(() => {
+        confettiLayer.style.display = "none";
+      }, 2600);
+    }
+
+    async function copyText(text) {
+      if (!navigator.clipboard || !text) {
+        return false;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function showErrorState(message) {
+      if (terminalReached || terminalTransitioning) {
+        return;
+      }
+      terminalReached = true;
+      stopAllTimers();
+      stopRingAnimation(false);
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      liveLayout.classList.add("hidden");
+      successState.style.display = "none";
+      errorState.style.display = "flex";
+      errorMessage.textContent = message || "An unexpected error occurred. Please try again.";
+    }
+
+    function showSuccessState(event) {
+      if (terminalReached && !terminalTransitioning) {
+        return;
+      }
+      terminalReached = true;
+      terminalTransitioning = false;
+      stopAllTimers();
+      stopRingAnimation(false);
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      completeAllStages();
+
+      currentConfirmation = extractConfirmation(event);
+      const missingConfirmation = !currentConfirmation || currentConfirmation === "Not provided";
+
+      if (missingConfirmation) {
+        confirmationBox.classList.add("hidden");
+        successFallback.classList.remove("hidden");
+      } else {
+        confirmationBox.classList.remove("hidden");
+        confirmationBox.textContent = currentConfirmation;
+        successFallback.classList.add("hidden");
+      }
+
+      const summary = extractCompletionSummary(event, currentConfirmation);
+      if (verifyTitle && verifyMessage) {
+        if (summary.method === "web_form") {
+          verifyTitle.textContent = summary.stage === "regulator" ? "Escalation submitted" : "Complaint submitted";
+          verifyMessage.textContent = `Your complaint was submitted on ${summary.targetName}.`;
+        } else if (summary.stage === "regulator") {
+          verifyTitle.textContent = "Escalation submitted";
+          verifyMessage.textContent = `Your complaint has been escalated to ${summary.targetName}. They will review your case.`;
+        } else if (summary.stage === "company") {
+          verifyTitle.textContent = "Complaint submitted";
+          verifyMessage.textContent = `Your complaint has been filed with ${summary.targetName}. They have 14 days to respond.`;
+        } else {
+          verifyTitle.textContent = "Complaint update";
+          verifyMessage.textContent = "Your complaint has been submitted successfully.";
+        }
+      }
+
+      liveLayout.classList.add("hidden");
+      errorState.style.display = "none";
+      successState.style.display = "flex";
+      launchConfetti();
+    }
+
+    function animateRingToComplete(event) {
+      if (terminalReached || ringCompleting || terminalTransitioning) {
+        return;
+      }
+
+      terminalTransitioning = true;
+      ringCompleting = true;
+      stopRingAnimation(false);
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      const current = parseFloat(String(ringPercent.textContent || "0").replace("%", ""));
+      const startPercent = Number.isFinite(current) ? Math.max(0, Math.min(100, current)) : 0;
+      const startTime = performance.now();
+
+      const tick = (timestamp) => {
+        const elapsed = timestamp - startTime;
+        const progress = Math.max(0, Math.min(elapsed / RING_COMPLETE_ANIMATION_MS, 1));
+        const nextPercent = startPercent + (100 - startPercent) * progress;
+        setRingPercent(nextPercent);
+
+        if (progress < 1) {
+          ringAnimationFrame = requestAnimationFrame(tick);
+          return;
+        }
+
+        ringAnimationFrame = null;
+        ringCompleting = false;
+        showSuccessState(event);
+      };
+
+      ringAnimationFrame = requestAnimationFrame(tick);
+    }
+
+    function updateStatusText(event, fallbackText) {
+      const purpose = String(event && event.purpose ? event.purpose : "").trim();
+      statusLine.textContent = purpose || fallbackText;
+    }
+
+    function onStarted(event) {
+      setStageState(0, 1);
+      updateStatusText(event, "Connecting to filing agent...");
+    }
+
+    function onProgress(event) {
+      progressCount += 1;
+
+      if (progressCount === 1) {
+        setStageState(1, 2);
+      } else if (progressCount === 2) {
+        setStageState(2, 3);
+      } else {
+        setStageState(3, 4);
+      }
+
+      updateStatusText(event, "Filing in progress...");
+    }
+
+    function updateScoreDisplay() {
+      quizScore.textContent = `Score: ${score} / 10`;
+    }
+
+    function updateStreakDisplay() {
+      if (streak <= 0) {
+        quizStreak.classList.add("hidden");
+        quizStreak.classList.remove("hot");
+        return;
+      }
+      quizStreak.classList.remove("hidden");
+      quizStreak.textContent = `🔥 ${streak}`;
+      quizStreak.classList.toggle("hot", streak >= 3);
+    }
+
+    function updateProgressBar() {
+      const currentQuestion = Math.min(quizIndex + 1, QUIZ_QUESTIONS.length);
+      const width = Math.max(0, Math.min((currentQuestion / QUIZ_QUESTIONS.length) * 100, 100));
+      quizProgressFill.style.width = `${width}%`;
+    }
+
+    function setAnswerButtonsEnabled(enabled) {
+      btnTrue.disabled = !enabled;
+      btnFalse.disabled = !enabled;
+    }
+
+    function clearAnswerStyles() {
+      [btnTrue, btnFalse].forEach((btn) => {
+        btn.classList.remove("correct", "wrong", "bounce");
+      });
+    }
+
+    function triggerBounce(button) {
+      button.classList.remove("bounce");
+      void button.offsetWidth;
+      button.classList.add("bounce");
+      setTimeout(() => {
+        button.classList.remove("bounce");
+      }, 220);
+    }
+
+    function renderQuestion() {
+      if (quizIndex >= QUIZ_QUESTIONS.length) {
+        showQuizResults();
+        return;
+      }
+
+      const item = QUIZ_QUESTIONS[quizIndex];
+      questionLabel.textContent = `Question ${quizIndex + 1} of 10`;
+      questionText.textContent = item.question;
+      explanation.classList.remove("visible");
+      explanation.textContent = "";
+      clearAnswerStyles();
+      setAnswerButtonsEnabled(true);
+      questionArea.classList.remove("hidden");
+      quizResults.classList.remove("visible");
+      updateProgressBar();
+      updateScoreDisplay();
+    }
+
+    function answerQuestion(userAnswer) {
+      if (terminalReached || quizIndex >= QUIZ_QUESTIONS.length) {
+        return;
+      }
+
+      const item = QUIZ_QUESTIONS[quizIndex];
+      const isCorrect = userAnswer === item.answer;
+      const clickedButton = userAnswer ? btnTrue : btnFalse;
+      triggerBounce(clickedButton);
+
+      setAnswerButtonsEnabled(false);
+
+      setTimeout(() => {
+        clearAnswerStyles();
+
+        const trueBtnShouldBeGreen = item.answer === true;
+        if (trueBtnShouldBeGreen) {
+          btnTrue.classList.add("correct");
+        } else {
+          btnFalse.classList.add("correct");
+        }
+
+        if (isCorrect) {
+          score += 1;
+          streak += 1;
+        } else {
+          streak = 0;
+          if (userAnswer) {
+            btnTrue.classList.add("wrong");
+          } else {
+            btnFalse.classList.add("wrong");
+          }
+        }
+
+        explanation.textContent = item.explanation;
+        explanation.classList.add("visible");
+        updateScoreDisplay();
+        updateStreakDisplay();
+
+        quizAdvanceTimer = setTimeout(() => {
+          quizIndex += 1;
+          renderQuestion();
+        }, 2000);
+      }, 200);
+    }
+
+    function showQuizResults() {
+      updateProgressBar();
+      questionArea.classList.add("hidden");
+      quizResults.classList.add("visible");
+
+      resultScore.textContent = `You scored ${score} / 10`;
+
+      bonusBadge.style.display = "none";
+      bonusCode.style.display = "none";
+      retryMessage.style.display = "none";
+      retryQuizButton.style.display = "none";
+
+      if (score >= 7) {
+        bonusBadge.style.display = "block";
+        bonusCode.style.display = "block";
+        bonusCode.textContent = `Use code QUIZ-${score}FREE when filing your next complaint.`;
+      } else {
+        retryMessage.style.display = "block";
+        retryQuizButton.style.display = "inline-flex";
+        retryMessage.textContent = `You got ${score} right. Score 7 or above next time to earn a free complaint.`;
+      }
+    }
+
+    function resetQuiz() {
+      if (quizAdvanceTimer) {
+        clearTimeout(quizAdvanceTimer);
+        quizAdvanceTimer = null;
+      }
+      quizIndex = 0;
+      score = 0;
+      streak = 0;
+      updateScoreDisplay();
+      updateStreakDisplay();
+      renderQuestion();
+    }
+
+    function parseStoredJson(key) {
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        return null;
+      }
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    async function escalateToRegulator() {
+      if (!escalateButton) {
+        return;
+      }
+
+      const complaintData = parseStoredJson("grippy_complaint");
+      const routing = parseStoredJson("grippy_routing");
+      const regulator = routing && routing.regulator ? routing.regulator : null;
+
+      if (!complaintData || !regulator) {
+        if (escalateStatus) {
+          escalateStatus.textContent = "Escalation data is missing. Please start again from chat.";
+        }
+        return;
+      }
+
+      if (escalateStatus) {
+        escalateStatus.textContent = `Escalation should now be continued from chat. Redirecting you to /chat?new=1 for ${regulator}.`;
+      }
+      const encoded = encodeURIComponent(JSON.stringify({ complaintData, regulator }));
+      window.location.href = `/chat?new=1&escalate=${encoded}`;
+    }
+
+    function handleSseEvent(event) {
+      if (terminalReached || isHeartbeat(event)) {
+        return;
+      }
+
+      const eventType = normalize(event.type);
+
+      if (eventType === "STARTED") {
+        onStarted(event);
+        return;
+      }
+
+      if (eventType === "PROGRESS") {
+        onProgress(event);
+        return;
+      }
+
+      if (eventType === "COMPLETE") {
+        animateRingToComplete(event);
+        return;
+      }
+
+      if (eventType === "ERROR" || eventType === "FAILED") {
+        showErrorState(event.message || "An unexpected error occurred. Please try again.");
+      }
+    }
+
+    copyConfirmationButton.addEventListener("click", async () => {
+      const original = copyConfirmationButton.textContent;
+      const value = currentConfirmation === "Not provided" ? "" : currentConfirmation;
+      const copied = await copyText(value);
+      copyConfirmationButton.textContent = copied ? "Copied!" : "Unavailable";
+      setTimeout(() => {
+        copyConfirmationButton.textContent = original;
+      }, 2000);
+    });
+
+    if (escalateButton) {
+      escalateButton.addEventListener("click", () => {
+        void escalateToRegulator();
+      });
+    }
+
+    btnTrue.addEventListener("click", () => {
+      answerQuestion(true);
+    });
+
+    btnFalse.addEventListener("click", () => {
+      answerQuestion(false);
+    });
+
+    retryQuizButton.addEventListener("click", () => {
+      resetQuiz();
+    });
+
+    function init() {
+      setRingPercent(0);
+      setStageState(0, 0);
+      updateStreakDisplay();
+      renderQuestion();
+
+      if (!runId) {
+        showErrorState("No filing session found.");
+        return;
+      }
+
+      startRingAnimation();
+      eventSource = new EventSource(`/api/status/${encodeURIComponent(runId)}`);
+      eventSource.onmessage = (messageEvent) => {
+        const event = parseEventPayload(messageEvent.data);
+        if (!event) {
+          return;
+        }
+        handleSseEvent(event);
+      };
+
+      eventSource.onerror = () => {
+        if (terminalReached || terminalTransitioning || ringCompleting) {
+          return;
+        }
+        showErrorState("Connection lost. Please check your email for confirmation.");
+      };
+    }
+
+    init();
+  </script>
+</body>
+</html>
