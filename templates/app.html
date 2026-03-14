@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grippy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a26;
+      --surface3: #222233;
+      --border: #2a2a3e;
+      --border-light: #3a3a50;
+      --text: #e8e8f0;
+      --text-dim: #8888a8;
+      --text-muted: #5a5a78;
+      --accent: #6c5ce7;
+      --accent-light: #a29bfe;
+      --accent-glow: rgba(108,92,231,0.15);
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.15);
+      --orange: #fdcb6e;
+      --orange-dim: rgba(253,203,110,0.15);
+      --red: #e17055;
+      --red-dim: rgba(225,112,85,0.15);
+      --blue: #74b9ff;
+      --blue-dim: rgba(116,185,255,0.15);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .tagline {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding-left: 14px;
+      border-left: 1px solid var(--border);
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .profile-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .profile-badge:hover { border-color: var(--accent); color: var(--text); }
+    .profile-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .profile-badge .dot.offline { background: var(--text-muted); }
+    .btn-icon {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--accent); color: var(--text); }
+
+    /* Chat Area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+    .chat-area::-webkit-scrollbar { width: 5px; }
+    .chat-area::-webkit-scrollbar-track { background: transparent; }
+    .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Messages */
+    .msg-wrapper { display: flex; gap: 10px; max-width: 780px; animation: fadeIn 0.3s ease; }
+    .msg-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
+    .msg-wrapper.bot { align-self: flex-start; }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .msg-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .msg-wrapper.bot .msg-avatar {
+      background: var(--accent-glow);
+      color: var(--accent-light);
+      border: 1px solid rgba(108,92,231,0.3);
+    }
+    .msg-wrapper.user .msg-avatar {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(0,184,148,0.3);
+    }
+
+    .msg-content {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+    .msg-wrapper.bot .msg-content {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .msg-wrapper.user .msg-content {
+      background: var(--accent);
+      color: white;
+      border: 1px solid transparent;
+    }
+
+    .msg-content strong { font-weight: 600; }
+    .msg-content em { font-style: italic; color: var(--text-dim); }
+    .msg-content ul, .msg-content ol { margin: 8px 0; padding-left: 20px; }
+    .msg-content li { margin: 4px 0; }
+    .msg-content code { background: var(--surface3); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    .msg-content a { color: var(--accent-light); text-decoration: underline; }
+    .msg-content hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+    .msg-content pre {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: flex; gap: 10px; align-self: flex-start;
+      max-width: 780px;
+      animation: fadeIn 0.3s ease;
+    }
+    .typing-dots {
+      display: flex; gap: 4px; align-items: center;
+      padding: 16px 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .typing-dots span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text-dim);
+      animation: typingBounce 1.4s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* Progress Message */
+    .msg-progress {
+      display: flex; gap: 10px; align-self: flex-start;
+      max-width: 780px;
+      animation: fadeIn 0.3s ease;
+    }
+    .progress-content {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--text);
+    }
+    .progress-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Scout Card */
+    .scout-card {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-top: 10px;
+    }
+    .scout-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent-light);
+      margin-bottom: 12px;
+    }
+    .scout-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .scout-stat { text-align: center; min-width: 65px; }
+    .scout-stat .num { font-size: 26px; font-weight: 700; }
+    .scout-stat .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+    .scout-stat.total .num { color: var(--text); }
+    .scout-stat.have .num { color: var(--green); }
+    .scout-stat.missing .num { color: var(--orange); }
+
+    /* Strategy Card */
+    .strategy-actions {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .strategy-btn {
+      padding: 8px 16px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .strategy-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+    .strategy-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .strategy-btn.primary:hover { background: #5b4bd5; }
+
+    /* Input Area */
+    .input-area {
+      padding: 16px 24px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .input-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .input-row {
+      display: flex; gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px;
+      transition: border-color 0.2s;
+    }
+    .input-row:focus-within { border-color: var(--accent); }
+    .input-row input {
+      flex: 1;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+    .input-row input::placeholder { color: var(--text-muted); }
+    .input-row button {
+      padding: 10px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-size: 14px; font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .input-row button:hover { background: #5b4bd5; }
+    .input-row button:disabled { background: var(--surface3); color: var(--text-muted); cursor: not-allowed; }
+
+    .quick-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .quick-btn {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-dim);
+      font-size: 12px; font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-btn:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+
+    /* Profile Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      justify-content: center; align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      width: 90%; max-width: 480px;
+      max-height: 80vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .modal .field-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(42,42,62,0.5);
+    }
+    .modal .field-label { font-size: 13px; color: var(--text-dim); }
+    .modal .field-value { font-size: 14px; font-weight: 500; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-actions button {
+      flex: 1; padding: 10px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-actions .btn-primary { background: var(--accent); border: none; color: white; }
+    .modal-actions .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+    .modal-actions .btn-danger { background: transparent; border: 1px solid var(--red); color: var(--red); font-size: 12px; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header { padding: 12px 16px; }
+      .tagline { display: none; }
+      .chat-area { padding: 16px; }
+      .msg-wrapper { max-width: 100%; }
+      .msg-avatar { display: none; }
+      .input-area { padding: 12px 16px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <a href="/" class="logo" style="text-decoration:none;">Grippy</a>
+      <div class="tagline">Complaint guidance + live form automation.</div>
+      <div style="display:flex;gap:6px;margin-left:12px;">
+        <a href="/" style="color:var(--text-dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:all 0.2s;">Home</a>
+        <a href="/chat" style="color:var(--text);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;background:var(--surface2);">Chat</a>
+        <a href="/dashboard" style="color:var(--text-dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:all 0.2s;">Dashboard</a>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="profile-badge" id="profileBadge" onclick="showProfile()">
+        <span class="dot offline" id="profileDot"></span>
+        <span id="profileName">Set up profile</span>
+      </div>
+      <button class="btn-icon" onclick="newConversation()" title="New conversation">+</button>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea"></div>
+
+  <div class="input-area">
+    <div class="input-container">
+      <div class="input-row">
+        <input type="text" id="msgInput" placeholder="Describe your problem or paste a form URL..." autocomplete="off">
+        <label for="fileUpload" class="btn-icon" title="Upload document (receipt, ticket, screenshot)" style="cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border:1px solid var(--border);border-radius:50%;color:var(--text-dim);font-size:16px;flex-shrink:0;">&#128206;</label>
+        <input type="file" id="fileUpload" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" onchange="handleFileUpload(event)">
+        <button id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+      <div class="quick-actions" id="quickActions"></div>
+      <div style="text-align:center;padding:4px 0;">
+        <span style="font-size:11px;color:var(--text-muted);">Grippy is a complaint filing assistant. It does not provide legal advice.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="profileModal" onclick="if(event.target===this)closeProfile()">
+    <div class="modal">
+      <h3>Your Profile</h3>
+      <div id="profileFields"></div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="closeProfile()">Done</button>
+        <button class="btn-danger" onclick="clearProfile()">Reset Profile</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// State
+let sessionId = localStorage.getItem('grippy_session') || crypto.randomUUID();
+localStorage.setItem('grippy_session', sessionId);
+let sending = false;
+let currentPhase = 'IDLE';
+let latestStrategy = null;
+
+// Init
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('msgInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  initializeSessionFromUrl();
+  await refreshProfile();
+  await sendToServer('');
+});
+
+function initializeSessionFromUrl() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('new') !== '1') return;
+  sessionId = crypto.randomUUID();
+  localStorage.setItem('grippy_session', sessionId);
+  currentPhase = 'IDLE';
+  latestStrategy = null;
+  document.getElementById('chatArea').innerHTML = '';
+  setQuickActions([]);
+  url.searchParams.delete('new');
+  const next = url.searchParams.toString();
+  window.history.replaceState({}, '', next ? `${url.pathname}?${next}` : url.pathname);
+}
+
+// Profile
+async function refreshProfile() {
+  try {
+    const res = await fetch('/api/v3/profile');
+    const data = await res.json();
+    const profile = data.profile || {};
+    const dot = document.getElementById('profileDot');
+    const name = document.getElementById('profileName');
+    if (data.is_onboarded) {
+      dot.className = 'dot';
+      name.textContent = profile.full_name || profile.given_name || 'Profile';
+    } else {
+      dot.className = 'dot offline';
+      name.textContent = 'Set up profile';
+    }
+  } catch (e) { console.error('Profile fetch failed:', e); }
+}
+
+function showProfile() {
+  fetch('/api/v3/profile').then(r => r.json()).then(data => {
+    const fields = document.getElementById('profileFields');
+    const profile = data.profile || {};
+    const labels = {
+      full_name:'Full Name', given_name:'First Name', family_name:'Last Name',
+      email:'Email', phone:'Phone', date_of_birth:'Date of Birth',
+      gender:'Gender', salutation:'Title', address_line1:'Address',
+      city:'City', state:'State', postal_code:'Postal Code',
+      country:'Country', nationality:'Nationality',
+    };
+    let html = '';
+    for (const [key, label] of Object.entries(labels)) {
+      if (profile[key]) {
+        html += `<div class="field-row"><span class="field-label">${label}</span><span class="field-value">${profile[key]}</span></div>`;
+      }
+    }
+    if (!html) html = '<p style="color:var(--text-dim);text-align:center;padding:20px;">No profile data yet.</p>';
+    fields.innerHTML = html;
+    document.getElementById('profileModal').classList.add('active');
+  });
+}
+
+function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
+
+async function clearProfile() {
+  if (!confirm('This will reset all your saved profile data. Continue?')) return;
+  await fetch('/api/v3/profile', { method: 'DELETE' });
+  closeProfile();
+  await refreshProfile();
+  newConversation();
+}
+
+// Markdown rendering
+function renderMarkdown(text) {
+  return text
+    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/^- (.*)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/^\d+\. (.*)/gm, '<li>$1</li>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
+// Chat messages
+function addMessage(text, type = 'bot', extra = '') {
+  const area = document.getElementById('chatArea');
+  const wrapper = document.createElement('div');
+  wrapper.className = `msg-wrapper ${type}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = type === 'bot' ? 'G' : (document.getElementById('profileName').textContent[0] || 'U');
+
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+  content.innerHTML = renderMarkdown(text) + extra;
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(content);
+  area.appendChild(wrapper);
+  area.scrollTop = area.scrollHeight;
+  return wrapper;
+}
+
+function addTypingIndicator() {
+  const area = document.getElementById('chatArea');
+  const el = document.createElement('div');
+  el.className = 'typing-indicator';
+  el.id = 'typingIndicator';
+  el.innerHTML = `
+    <div class="msg-avatar" style="background:var(--accent-glow);color:var(--accent-light);border:1px solid rgba(108,92,231,0.3);">G</div>
+    <div class="typing-dots"><span></span><span></span><span></span></div>
+  `;
+  area.appendChild(el);
+  area.scrollTop = area.scrollHeight;
+  return el;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function addProgress(text) {
+  const area = document.getElementById('chatArea');
+  const el = document.createElement('div');
+  el.className = 'msg-progress';
+  el.id = 'activeProgress';
+  el.innerHTML = `
+    <div class="msg-avatar" style="background:var(--accent-glow);color:var(--accent-light);border:1px solid rgba(108,92,231,0.3);">G</div>
+    <div class="progress-content"><div class="progress-spinner"></div><span class="progress-text">${text}</span></div>
+  `;
+  area.appendChild(el);
+  area.scrollTop = area.scrollHeight;
+  return el;
+}
+
+function updateProgress(el, text) {
+  if (el) {
+    const span = el.querySelector('.progress-text');
+    if (span) span.textContent = text;
+  }
+  document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+}
+
+function finishProgress(el) { if (el) el.remove(); }
+
+function setQuickActions(actions) {
+  const c = document.getElementById('quickActions');
+  c.innerHTML = '';
+  actions.forEach(a => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.textContent = a.label;
+    if (a.action) {
+      btn.onclick = () => runChatAction(a.action);
+    } else {
+      btn.onclick = () => { document.getElementById('msgInput').value = a.text; sendMessage(); };
+    }
+    c.appendChild(btn);
+  });
+}
+
+function getPreferredFormStep(strategy = latestStrategy) {
+  if (!strategy || !Array.isArray(strategy.escalation_path)) return null;
+  return strategy.escalation_path.find(step => step.action === 'form') || null;
+}
+
+function renderStrategyActions(msgEl, strategy) {
+  latestStrategy = strategy;
+  const formStep = getPreferredFormStep(strategy);
+  const formLabel = formStep ? `Open ${formStep.target} flow` : 'Fill the complaint form';
+  const firstAction = strategy.first_step?.action;
+  const actions = document.createElement('div');
+  actions.className = 'strategy-actions';
+  if (firstAction === 'email') {
+    actions.innerHTML = `
+      <button class="strategy-btn primary" data-action="draft_email">Draft complaint email</button>
+      <button class="strategy-btn" data-action="fill_form">${formLabel}</button>
+      <button class="strategy-btn" data-action="escalate">Escalate later</button>
+    `;
+  } else {
+    actions.innerHTML = `
+      <button class="strategy-btn primary" data-action="fill_form">${formLabel}</button>
+      <button class="strategy-btn" data-action="draft_email">Draft an email first</button>
+      <button class="strategy-btn" data-action="escalate">Escalate later</button>
+    `;
+  }
+  actions.querySelectorAll('[data-action]').forEach(btn => {
+    btn.onclick = () => runChatAction(btn.dataset.action);
+  });
+  msgEl.querySelector('.msg-content').appendChild(actions);
+}
+
+function redirectToLiveFill(runId, data = {}) {
+  const params = new URLSearchParams({
+    run_id: runId,
+    session_id: data.session_id || sessionId,
+    source: 'chat',
+    autocontinue: '1',
+  });
+  const target = data.live_fill_target || getPreferredFormStep(data.strategy)?.target || '';
+  if (target) params.set('target', target);
+  if (data.live_fill_url) params.set('url', data.live_fill_url);
+  window.location.href = `/live-fill?${params.toString()}`;
+}
+
+// Send
+async function sendMessage() {
+  if (sending) return;
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage(text, 'user');
+  setQuickActions([]);
+  await sendToServer(text);
+}
+
+async function runChatAction(action) {
+  if (sending) return;
+  setQuickActions([]);
+  await sendToServer('', action);
+}
+
+async function sendToServer(text, action = null) {
+  sending = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  // Show typing indicator for non-empty messages
+  let typingEl = null;
+  if (text !== '' || action === 'draft_email' || action === 'escalate') {
+    typingEl = addTypingIndicator();
+  }
+
+  try {
+    const res = await fetch('/api/v3/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, message: text, action }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Request failed');
+    currentPhase = data.phase;
+    if (data.strategy) latestStrategy = data.strategy;
+
+    removeTypingIndicator();
+
+    if (data.run_id) {
+      redirectToLiveFill(data.run_id, data);
+      return;
+    }
+
+    if (data.reply) {
+      const msgEl = addMessage(data.reply, 'bot');
+
+      // Add strategy action buttons if in STRATEGY phase
+      if (data.phase === 'STRATEGY' && data.strategy) {
+        renderStrategyActions(msgEl, data.strategy);
+      }
+    }
+    await refreshProfile();
+    showContextualActions(data.phase, data.strategy || latestStrategy);
+
+  } catch (e) {
+    removeTypingIndicator();
+    addMessage(e.message || 'Connection error. Please try again.', 'bot');
+    console.error(e);
+  } finally {
+    sending = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('msgInput').focus();
+  }
+}
+
+function quickSend(text) {
+  document.getElementById('msgInput').value = text;
+  sendMessage();
+}
+
+async function streamProgress(runId) {
+  const progressEl = addProgress('Working on it...');
+
+  try {
+    const evtSource = new EventSource(`/api/v3/stream/${runId}`);
+    await new Promise((resolve) => {
+      evtSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'HEARTBEAT') return;
+
+          if (data.type === 'PROGRESS') {
+            updateProgress(progressEl, data.message);
+          }
+          else if (data.type === 'SCOUT_COMPLETE') {
+            finishProgress(progressEl);
+            let extra = '';
+            if (data.scout_summary) {
+              const s = data.scout_summary;
+              extra = `
+                <div class="scout-card">
+                  <div class="scout-card-title">Form Scan Results</div>
+                  <div class="scout-stats">
+                    <div class="scout-stat total"><div class="num">${s.total_fields}</div><div class="label">Total</div></div>
+                    <div class="scout-stat have"><div class="num">${s.have}</div><div class="label">Auto-fill</div></div>
+                    <div class="scout-stat missing"><div class="num">${s.missing + s.case_specific}</div><div class="label">Need Info</div></div>
+                  </div>
+                </div>`;
+            }
+            addMessage(data.message, 'bot', extra);
+            currentPhase = data.phase;
+            if (data.action === 'start_fill') sendToServer('');
+            showContextualActions(data.phase);
+            evtSource.close();
+            resolve();
+          }
+          else if (data.type === 'SCOUT_FAILED') {
+            finishProgress(progressEl);
+            addMessage(data.message, 'bot');
+            currentPhase = data.phase || 'IDLE';
+            showContextualActions(currentPhase);
+            evtSource.close();
+            resolve();
+          }
+          else if (data.type === 'COMPLETE') {
+            finishProgress(progressEl);
+            addMessage(data.message, 'bot');
+            currentPhase = data.phase || 'DONE';
+            showContextualActions(currentPhase);
+            evtSource.close();
+            resolve();
+          }
+          else if (data.type === 'FAILED' || data.type === 'ERROR') {
+            finishProgress(progressEl);
+            addMessage(data.message || 'Something went wrong.', 'bot');
+            currentPhase = data.phase || 'IDLE';
+            showContextualActions(currentPhase);
+            evtSource.close();
+            resolve();
+          }
+        } catch (e) { console.error('Parse error:', e); }
+      };
+      evtSource.onerror = (err) => {
+        finishProgress(progressEl);
+        addMessage('Connection lost. The operation may still be running in the background. Please try refreshing.', 'bot');
+        console.error('SSE error:', err);
+        evtSource.close();
+        resolve();
+      };
+    });
+  } catch (e) { finishProgress(progressEl); console.error('Stream error:', e); }
+}
+
+function showContextualActions(phase, strategy = latestStrategy) {
+  switch (phase) {
+    case 'IDLE':
+    case 'DONE':
+      setQuickActions([
+        { label: 'File a complaint', text: 'I want to file a complaint' },
+        { label: 'Fill a form', text: 'I need to fill a form at ' },
+        { label: 'Update my info', text: 'Update my ' },
+      ]);
+      break;
+    case 'STRATEGY':
+      const formStep = getPreferredFormStep(strategy);
+      setQuickActions([
+        { label: 'Draft email', action: 'draft_email' },
+        { label: formStep ? `Open ${formStep.target}` : 'Open the form', action: 'fill_form' },
+        { label: 'Escalate later', action: 'escalate' },
+      ]);
+      break;
+    case 'LEARN':
+      setQuickActions([
+        { label: 'Yes, save it', text: 'Yes' },
+        { label: 'No thanks', text: 'No' },
+      ]);
+      break;
+    default:
+      setQuickActions([]);
+  }
+}
+
+function newConversation() {
+  sessionId = crypto.randomUUID();
+  localStorage.setItem('grippy_session', sessionId);
+  document.getElementById('chatArea').innerHTML = '';
+  currentPhase = 'IDLE';
+  latestStrategy = null;
+  setQuickActions([]);
+  sendToServer('');
+}
+
+// ── Document Upload (Phase 3) ──
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    addMessage('File is too large. Maximum size is 10MB.', 'bot');
+    return;
+  }
+
+  addMessage(`Uploading: ${file.name}`, 'user');
+  const progressEl = addProgress('Extracting data from document...');
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch('/api/v3/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    finishProgress(progressEl);
+
+    if (data.extracted_data) {
+      const keys = Object.keys(data.extracted_data);
+      let msg = `**Extracted ${keys.length} fields from your document:**\n`;
+      for (const [k, v] of Object.entries(data.extracted_data)) {
+        if (v) msg += `- **${k}:** ${v}\n`;
+      }
+      if (data.profile_updated) msg += '\n_Your profile has been updated with this data._';
+      addMessage(msg, 'bot');
+    } else {
+      addMessage(`Document uploaded (${file.name}), but I couldn\'t extract structured data. You can still provide the details manually.`, 'bot');
+    }
+    await refreshProfile();
+  } catch (e) {
+    finishProgress(progressEl);
+    addMessage('Failed to upload document. Please try again.', 'bot');
+    console.error('Upload error:', e);
+  }
+}
+
+// ── Email Send Confirmation (Phase 4) ──
+async function sendDraftedEmail(toEmail) {
+  if (!confirm(`Send this email to ${toEmail}?`)) return;
+  const progressEl = addProgress('Sending email...');
+  try {
+    const res = await fetch('/api/v3/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, to_email: toEmail, confirm: true }),
+    });
+    const data = await res.json();
+    finishProgress(progressEl);
+    if (data.backend === 'dev_mode') {
+      addMessage('Live email sending is not configured in this environment. Use the draft manually instead.', 'bot');
+    } else if (data.success) {
+      addMessage(`Email sent successfully to **${toEmail}**! I\'ll follow up if there\'s no response in 7 days.`, 'bot');
+    } else {
+      addMessage(`Email was not sent: ${data.error || data.message || 'Unknown error'}. You can copy the draft and send it manually.`, 'bot');
+    }
+  } catch (e) {
+    finishProgress(progressEl);
+    addMessage('Failed to send email. Please try again or send it manually.', 'bot');
+    console.error('Email send error:', e);
+  }
+}
+</script>
+</body>
+</html>

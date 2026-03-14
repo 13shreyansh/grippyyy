@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grippy — Live Form Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #fafafa;
+      min-height: 100vh;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #10b981;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fafafa; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* ── Hero Section ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+    .hero h1 .accent { color: #10b981; }
+    .hero-sub {
+      color: #71717a;
+      font-size: 17px;
+      margin-bottom: 36px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
+    }
+
+    /* ── URL Input — the star of the show ── */
+    .url-hero {
+      max-width: 720px;
+      margin: 0 auto 16px;
+    }
+    .featured-demos {
+      max-width: 720px;
+      margin: 0 auto 18px;
+      text-align: center;
+    }
+    .featured-label {
+      color: #71717a;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .featured-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .url-input-group {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .url-input-group:focus-within {
+      border-color: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    .url-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 18px 24px;
+      font-size: 17px;
+      color: #fafafa;
+      outline: none;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .url-input::placeholder { color: #52525b; }
+    .scan-btn {
+      padding: 18px 32px;
+      background: #10b981;
+      color: #0a0a0a;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .scan-btn:hover { background: #34d399; }
+    .scan-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Detection badge ── */
+    .detection-badge {
+      display: none;
+      max-width: 720px;
+      margin: 12px auto 0;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .detection-badge.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    .detection-badge.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    .detection-badge.loading {
+      display: block;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #a1a1aa;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Examples toggle ── */
+    .examples-toggle {
+      text-align: center;
+      margin: 16px auto 0;
+    }
+    .examples-toggle-btn {
+      background: none;
+      border: none;
+      color: #52525b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 4px 8px;
+    }
+    .examples-toggle-btn:hover { color: #a1a1aa; }
+    .examples-toggle-btn .arrow { transition: transform 0.3s; display: inline-block; }
+    .examples-toggle-btn.open .arrow { transform: rotate(180deg); }
+
+    .examples-panel {
+      max-width: 720px;
+      margin: 8px auto 0;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .examples-panel.open { display: block; }
+    .examples-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    .example-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #71717a;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .example-btn:hover {
+      background: rgba(255,255,255,0.06);
+      color: #a1a1aa;
+    }
+    .example-btn.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+    .example-tag {
+      font-size: 8px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-left: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* ── CAPTCHA Status ── */
+    .captcha-status {
+      display: none;
+      max-width: 720px;
+      margin: 8px auto 0;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .captcha-status.active { display: flex; }
+    .captcha-status.solved {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    /* ── Two Column Layout ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+    }
+    @media (max-width: 700px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #10b981;
+      margin-bottom: 16px;
+    }
+
+    /* ── Data Section with Tabs ── */
+    .data-tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-wrap: wrap;
+    }
+    .data-tab {
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #71717a;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .data-tab:hover { color: #a1a1aa; }
+    .data-tab.active {
+      color: #10b981;
+      border-bottom-color: #10b981;
+    }
+    .data-panel { display: none; }
+    .data-panel.active { display: block; }
+    .field-group { margin-bottom: 10px; }
+    .field-label {
+      display: block;
+      font-size: 11px;
+      color: #71717a;
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+    .field-input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #fafafa;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: rgba(16, 185, 129, 0.5); }
+    .field-input::placeholder { color: #3f3f46; }
+    .field-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #fafafa;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+      min-height: 50px;
+      font-family: inherit;
+    }
+    .field-textarea:focus { border-color: rgba(16, 185, 129, 0.5); }
+    .field-textarea::placeholder { color: #3f3f46; }
+
+    /* ── Profile Bar ── */
+    .profile-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+    }
+    .profile-bar label {
+      font-size: 11px;
+      color: #71717a;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .profile-select {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #fafafa;
+      outline: none;
+    }
+    .profile-select option { background: #1a1a1a; }
+    .profile-action-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #a1a1aa;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .profile-action-btn:hover { background: rgba(255,255,255,0.1); color: #fafafa; }
+
+    /* ── Genome Preview ── */
+    .genome-preview {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      min-height: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .genome-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 260px;
+      color: #3f3f46;
+      font-size: 14px;
+      text-align: center;
+      gap: 8px;
+    }
+    .genome-empty-icon { font-size: 40px; opacity: 0.3; }
+    .genome-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .genome-field:last-child { border-bottom: none; }
+    .genome-field-type {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .genome-field-name { color: #d4d4d8; font-size: 13px; }
+    .genome-field-value {
+      margin-left: auto;
+      color: #10b981;
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .genome-field-unmapped {
+      margin-left: auto;
+      color: #52525b;
+      font-size: 11px;
+    }
+    .genome-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .genome-stat {
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .genome-stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #10b981;
+    }
+    .genome-stat-label {
+      font-size: 10px;
+      color: #71717a;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+    }
+
+    /* ── Action Bar ── */
+    .action-bar {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .run-btn {
+      padding: 16px 48px;
+      background: #10b981;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .run-btn:hover { background: #34d399; transform: translateY(-1px); }
+    .run-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .dry-run-btn {
+      padding: 16px 32px;
+      background: rgba(255,255,255,0.06);
+      color: #fafafa;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dry-run-btn:hover { background: rgba(255,255,255,0.1); }
+    .dry-run-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── How It Works ── */
+    .how-it-works {
+      margin-top: 64px;
+      text-align: center;
+    }
+    .how-it-works h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      color: #d4d4d8;
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 24px 16px;
+    }
+    .step-num {
+      font-size: 28px;
+      font-weight: 900;
+      color: #10b981;
+      margin-bottom: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fafafa;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: #71717a;
+      line-height: 1.5;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(16, 185, 129, 0.3);
+      border-top-color: #10b981;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">Grippy</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/demo">Demo</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- HERO — The URL input is the entire product                      -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div class="hero">
+      <h1>Run a <span class="accent">live form demo</span></h1>
+      <p class="hero-sub">
+        Paste a public form URL. Grippy scans the form, maps your data, and attempts a live browser fill.
+        For the strongest live demo, use the CASE Singapore complaint portal or the httpbin fallback below.
+      </p>
+
+      <div class="featured-demos">
+        <div class="featured-label">Recommended live paths</div>
+        <div class="featured-grid">
+          <button class="example-btn" onclick="loadPreset('case_sg')">CASE SG <span class="example-tag">real complaint</span></button>
+          <button class="example-btn" onclick="loadPreset('httpbin')">httpbin <span class="example-tag">fallback</span></button>
+        </div>
+      </div>
+
+      <div class="url-hero">
+        <div class="url-input-group">
+          <input id="urlInput" class="url-input" type="url"
+                 placeholder="https://httpbin.org/forms/post"
+                 oninput="onUrlChange()"
+                 onblur="normalizeUrlField()" />
+          <button id="scanBtn" class="scan-btn" onclick="scanForm()">Scan &amp; Map</button>
+        </div>
+      </div>
+
+      <div class="url-hero" style="margin-top:8px">
+        <input id="intentInput" type="text" class="url-input" style="width:100%;padding:14px 20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#fafafa;font-size:15px"
+               placeholder="What do you want to do? e.g. 'File a consumer complaint about a defective laptop' (optional — helps with multi-step forms)" />
+      </div>
+
+      <div id="detectionBadge" class="detection-badge"></div>
+
+      <div id="captchaStatus" class="captcha-status">
+        <span>&#x1F512;</span> <span id="captchaText">CAPTCHA detected — solving automatically...</span>
+      </div>
+
+      <!-- Collapsible Examples -->
+      <div class="examples-toggle">
+        <button class="examples-toggle-btn" onclick="toggleExamples(this)">
+          Try an example <span class="arrow">&#x25BC;</span>
+        </button>
+      </div>
+      <div id="examplesPanel" class="examples-panel">
+        <div class="examples-grid">
+          <button class="example-btn" onclick="loadPreset('case_sg')">CASE SG <span class="example-tag">recommended</span></button>
+          <button class="example-btn" onclick="loadPreset('httpbin')">httpbin.org</button>
+          <button class="example-btn" onclick="loadPreset('demoqa')">DemoQA Form</button>
+          <button class="example-btn" onclick="loadPreset('w3schools')">W3Schools</button>
+          <button class="example-btn" onclick="loadPreset('register_test')">Registration</button>
+          <button class="example-btn" onclick="loadPreset('cfpb')">CFPB <span class="example-tag">gov</span></button>
+          <button class="example-btn" onclick="loadPreset('bbb')">BBB Complaint</button>
+          <button class="example-btn" onclick="loadPreset('irs_freefileable')">IRS <span class="example-tag">tax</span></button>
+          <button class="example-btn" onclick="loadPreset('iras_sg')">IRAS SG <span class="example-tag">tax</span></button>
+          <button class="example-btn" onclick="loadPreset('hmrc_uk')">HMRC UK <span class="example-tag">tax</span></button>
+          <button class="example-btn" onclick="loadPreset('ds160')">US Visa DS-160</button>
+          <button class="example-btn" onclick="loadPreset('uk_visa')">UK Visa</button>
+          <button class="example-btn" onclick="loadPreset('sg_visa')">SG Visa</button>
+          <button class="example-btn" onclick="loadPreset('aig_claim')">AIG Claims</button>
+          <button class="example-btn" onclick="loadPreset('allianz_claim')">Allianz Travel</button>
+          <button class="example-btn" onclick="loadPreset('ntuc_claim')">NTUC Income</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- TWO COLUMNS: Your Data | Form Genome Preview                    -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div class="two-col">
+      <div class="data-section">
+        <div class="section-title">Your Data</div>
+
+        <div class="profile-bar">
+          <label>Profile</label>
+          <select class="profile-select" id="profileSelect" onchange="loadProfile()">
+            <option value="default">Default Profile</option>
+          </select>
+          <button class="profile-action-btn" onclick="saveCurrentProfile()">Save</button>
+          <button class="profile-action-btn" onclick="newProfile()">New</button>
+        </div>
+
+        <div class="data-tabs">
+          <button class="data-tab active" onclick="switchTab('personal')">Personal</button>
+          <button class="data-tab" onclick="switchTab('contact')">Contact</button>
+          <button class="data-tab" onclick="switchTab('address')">Address</button>
+          <button class="data-tab" onclick="switchTab('financial')">Financial</button>
+          <button class="data-tab" onclick="switchTab('travel')">Travel</button>
+          <button class="data-tab" onclick="switchTab('account')">Account</button>
+          <button class="data-tab" onclick="switchTab('complaint')">Complaint</button>
+        </div>
+
+        <!-- Personal Info Tab -->
+        <div class="data-panel active" id="panel-personal">
+          <div class="field-group">
+            <label class="field-label">Full Name</label>
+            <input class="field-input" data-key="full_name" value="John Smith" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Given Name</label>
+            <input class="field-input" data-key="given_name" value="John" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Family Name</label>
+            <input class="field-input" data-key="family_name" value="Smith" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Middle Name</label>
+            <input class="field-input" data-key="middle_name" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Salutation</label>
+            <input class="field-input" data-key="salutation" value="Mr" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Gender</label>
+            <input class="field-input" data-key="gender" value="Male" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Date of Birth</label>
+            <input class="field-input" data-key="date_of_birth" value="1990-05-15" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Year of Birth</label>
+            <input class="field-input" data-key="year_of_birth" value="1990" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">NRIC / National ID</label>
+            <input class="field-input" data-key="nric" value="S1234567A" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Nationality</label>
+            <input class="field-input" data-key="nationality" value="Singaporean" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Race / Ethnicity</label>
+            <input class="field-input" data-key="race" value="Chinese" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Marital Status</label>
+            <input class="field-input" data-key="marital_status" value="Single" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Occupation</label>
+            <input class="field-input" data-key="occupation" value="Software Engineer" />
+          </div>
+        </div>
+
+        <!-- Contact Tab -->
+        <div class="data-panel" id="panel-contact">
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input class="field-input" data-key="email" value="john.smith@example.com" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone (Mobile)</label>
+            <input class="field-input" data-key="phone_mobile" value="+6591234567" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone (Home)</label>
+            <input class="field-input" data-key="phone_home" value="+6561234567" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone (Office)</label>
+            <input class="field-input" data-key="phone_office" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Fax Number</label>
+            <input class="field-input" data-key="fax" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Emergency Contact Name</label>
+            <input class="field-input" data-key="emergency_contact_name" value="Jane Smith" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Emergency Contact Phone</label>
+            <input class="field-input" data-key="emergency_contact_phone" value="+6598765432" />
+          </div>
+        </div>
+
+        <!-- Address Tab -->
+        <div class="data-panel" id="panel-address">
+          <div class="field-group">
+            <label class="field-label">Block / House Number</label>
+            <input class="field-input" data-key="block" value="123" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Street</label>
+            <input class="field-input" data-key="street" value="Orchard Road" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Unit Number</label>
+            <input class="field-input" data-key="unit_number" value="05-01" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Building Name</label>
+            <input class="field-input" data-key="building_name" value="The Orchid" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">City</label>
+            <input class="field-input" data-key="city" value="Singapore" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">State / Province</label>
+            <input class="field-input" data-key="state" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Postal Code</label>
+            <input class="field-input" data-key="postal_code" value="238858" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Country</label>
+            <input class="field-input" data-key="country" value="Singapore" />
+          </div>
+        </div>
+
+        <!-- Financial Tab -->
+        <div class="data-panel" id="panel-financial">
+          <div class="field-group">
+            <label class="field-label">Tax ID / SSN</label>
+            <input class="field-input" data-key="tax_id" value="" placeholder="e.g., 123-45-6789" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Annual Income</label>
+            <input class="field-input" data-key="annual_income" value="" placeholder="e.g., 75000" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Employer Name</label>
+            <input class="field-input" data-key="employer_name" value="" placeholder="Company name" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Filing Status</label>
+            <input class="field-input" data-key="filing_status" value="Single" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Bank Name</label>
+            <input class="field-input" data-key="bank_name" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Bank Account Number</label>
+            <input class="field-input" data-key="bank_account" value="" placeholder="Optional" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Insurance Policy Number</label>
+            <input class="field-input" data-key="policy_number" value="" placeholder="e.g., POL-123456" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Claim Amount</label>
+            <input class="field-input" data-key="claim_amount" value="" placeholder="e.g., 5000.00" />
+          </div>
+        </div>
+
+        <!-- Travel Tab -->
+        <div class="data-panel" id="panel-travel">
+          <div class="field-group">
+            <label class="field-label">Passport Number</label>
+            <input class="field-input" data-key="passport_number" value="" placeholder="e.g., E12345678" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Passport Expiry Date</label>
+            <input class="field-input" data-key="passport_expiry" value="" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Country of Birth</label>
+            <input class="field-input" data-key="country_of_birth" value="Singapore" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Intended Arrival Date</label>
+            <input class="field-input" data-key="arrival_date" value="" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Intended Departure Date</label>
+            <input class="field-input" data-key="departure_date" value="" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Purpose of Travel</label>
+            <input class="field-input" data-key="travel_purpose" value="Tourism" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Destination Country</label>
+            <input class="field-input" data-key="destination_country" value="" placeholder="e.g., United States" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Hotel / Accommodation Address</label>
+            <input class="field-input" data-key="accommodation_address" value="" placeholder="Hotel name and address" />
+          </div>
+        </div>
+
+        <!-- Account Tab -->
+        <div class="data-panel" id="panel-account">
+          <div class="field-group">
+            <label class="field-label">Username</label>
+            <input class="field-input" data-key="username" value="johnsmith90" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Password</label>
+            <input class="field-input" data-key="password" value="SecurePass123!" type="password" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Website / URL</label>
+            <input class="field-input" data-key="website" value="" placeholder="https://example.com" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Company / Organization</label>
+            <input class="field-input" data-key="company" value="" placeholder="Your company name" />
+          </div>
+        </div>
+
+        <!-- Complaint Tab -->
+        <div class="data-panel" id="panel-complaint">
+          <div class="field-group">
+            <label class="field-label">Subject</label>
+            <input class="field-input" data-key="subject" value="Defective Product Complaint" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Company / Vendor Name</label>
+            <input class="field-input" data-key="company_name" value="" placeholder="Company you're complaining about" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Message / Comments</label>
+            <textarea class="field-textarea" data-key="message" rows="2">I would like to inquire about your services. Please contact me at your earliest convenience.</textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Complaint Description</label>
+            <textarea class="field-textarea" data-key="complaint_description" rows="3">I would like to file a formal complaint regarding a defective product purchased on 2025-12-01. The product stopped working within 2 weeks of purchase despite being advertised as having a 1-year warranty.</textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Incident Date</label>
+            <input class="field-input" data-key="incident_date" value="2025-12-15" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Purchase Amount</label>
+            <input class="field-input" data-key="purchase_amount" value="" placeholder="e.g., 299.99" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Desired Outcome</label>
+            <input class="field-input" data-key="desired_outcome" value="Full refund and replacement" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Reference / Order Number</label>
+            <input class="field-input" data-key="reference_number" value="" placeholder="Order or transaction ID" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">Form Genome Preview</div>
+        <div id="genomePreview" class="genome-preview">
+          <div class="genome-empty">
+            <div class="genome-empty-icon">&#x1F9EC;</div>
+            Paste a public form URL above and click Scan to inspect the form's structure
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button id="dryRunBtn" class="dry-run-btn" onclick="runEngine(true)" disabled>Dry Run (Preview)</button>
+      <button id="runBtn" class="run-btn" onclick="runEngine(false)" disabled>Fill the Form</button>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- HOW IT WORKS                                                    -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div class="how-it-works">
+      <h2>How it works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-title">Paste a live form URL</div>
+          <div class="step-desc">Use a public form that does not require login. The verified demo path is the httpbin form.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-title">Grippy reads the form</div>
+          <div class="step-desc">The Form Genome Engine extracts every field, classifies the form type, and maps your data to each field.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-title">One click to fill</div>
+          <div class="step-desc">Grippy opens the real website and fills the form in a browser. Some CAPTCHA flows can be handled when a solver is configured.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let scannedGenome = null;
+
+    // ──────────────────────────────────────────────────────────────────
+    // Preset Definitions (examples only — engine works on ANY URL)
+    // ──────────────────────────────────────────────────────────────────
+
+    const PRESETS = {
+      case_sg: {
+        url: 'https://crdcomplaints.azurewebsites.net/',
+        intent: 'File a consumer complaint on the CASE Singapore portal',
+        data: {
+          salutation: 'Mr', given_name: 'John', family_name: 'Smith',
+          gender: 'Male', year_of_birth: '1990', email: 'john.smith@example.com',
+          phone_mobile: '91234567', phone_home: '61234567',
+          nric: 'S1234567A', nationality: 'Singaporean', race: 'Chinese',
+          block: '123', street: 'Orchard Road', unit_number: '05-01',
+          building_name: 'The Orchid', postal_code: '238858', country: 'Singapore',
+          complaint_description: 'Defective product purchased on 2025-12-01. Product stopped working within 2 weeks.',
+          desired_outcome: 'Full refund',
+        }
+      },
+      cfpb: {
+        url: 'https://www.consumerfinance.gov/complaint/',
+        intent: 'File a consumer finance complaint about unauthorized credit card charges',
+        data: {
+          full_name: 'John Smith', email: 'john.smith@example.com',
+          phone_mobile: '+1-555-123-4567', postal_code: '10001',
+          state: 'New York', country: 'United States',
+          company_name: 'Example Bank Corp',
+          complaint_description: 'Unauthorized charges on my credit card statement totaling $450.',
+          desired_outcome: 'Refund of unauthorized charges',
+        }
+      },
+      bbb: {
+        url: 'https://www.bbb.org/file-a-complaint',
+        intent: 'File a Better Business Bureau complaint for a missing delivery',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          email: 'john.smith@example.com', phone_mobile: '+1-555-123-4567',
+          street: '123 Main Street', city: 'New York', state: 'NY',
+          postal_code: '10001', country: 'United States',
+          company_name: 'Example Retailer Inc',
+          complaint_description: 'Ordered a product online that was never delivered.',
+          purchase_amount: '199.99', desired_outcome: 'Delivery or full refund',
+        }
+      },
+      irs_freefileable: {
+        url: 'https://www.irs.gov/e-file-providers/free-file-fillable-forms',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          tax_id: '123-45-6789', date_of_birth: '1990-05-15',
+          filing_status: 'Single', annual_income: '75000',
+          employer_name: 'Tech Corp Inc', occupation: 'Software Engineer',
+          street: '123 Main Street', city: 'San Francisco', state: 'CA',
+          postal_code: '94105', country: 'United States',
+          phone_mobile: '+1-555-123-4567', email: 'john.smith@example.com',
+        }
+      },
+      iras_sg: {
+        url: 'https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/understanding-my-income-tax-filing',
+        data: {
+          full_name: 'John Smith', nric: 'S1234567A',
+          nationality: 'Singaporean', date_of_birth: '1990-05-15',
+          annual_income: '85000', employer_name: 'Singapore Tech Pte Ltd',
+          occupation: 'Software Engineer', marital_status: 'Single',
+          email: 'john.smith@example.com', phone_mobile: '+6591234567',
+          block: '123', street: 'Orchard Road', postal_code: '238858',
+        }
+      },
+      hmrc_uk: {
+        url: 'https://www.gov.uk/log-in-register-hmrc-online-services',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          tax_id: 'AB123456C', date_of_birth: '1990-05-15',
+          annual_income: '45000', employer_name: 'London Tech Ltd',
+          street: '10 Downing Street', city: 'London', postal_code: 'SW1A 2AA',
+          country: 'United Kingdom', phone_mobile: '+44-7700-900000',
+          email: 'john.smith@example.co.uk',
+        }
+      },
+      ds160: {
+        url: 'https://ceac.state.gov/genniv/',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          date_of_birth: '1990-05-15', country_of_birth: 'Singapore',
+          nationality: 'Singaporean', passport_number: 'E12345678',
+          passport_expiry: '2030-12-31', gender: 'Male',
+          email: 'john.smith@example.com', phone_mobile: '+6591234567',
+          street: '123 Orchard Road', city: 'Singapore', postal_code: '238858',
+          country: 'Singapore', travel_purpose: 'Tourism',
+          destination_country: 'United States',
+          arrival_date: '2026-06-01', departure_date: '2026-06-15',
+        }
+      },
+      uk_visa: {
+        url: 'https://www.gov.uk/apply-to-come-to-the-uk',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          date_of_birth: '1990-05-15', nationality: 'Singaporean',
+          passport_number: 'E12345678', passport_expiry: '2030-12-31',
+          gender: 'Male', email: 'john.smith@example.com',
+          phone_mobile: '+6591234567', occupation: 'Software Engineer',
+        }
+      },
+      sg_visa: {
+        url: 'https://www.ica.gov.sg/enter-transit-depart/entering-singapore/visa_requirements',
+        data: {
+          full_name: 'John Doe', given_name: 'John', family_name: 'Doe',
+          date_of_birth: '1990-05-15', nationality: 'American',
+          passport_number: 'P98765432', passport_expiry: '2030-06-30',
+          gender: 'Male', email: 'john.doe@example.com',
+          phone_mobile: '+1-555-123-4567', travel_purpose: 'Tourism',
+        }
+      },
+      aig_claim: {
+        url: 'https://www.aig.com/home/claims/report-a-claim',
+        data: {
+          full_name: 'John Smith', given_name: 'John', family_name: 'Smith',
+          email: 'john.smith@example.com', phone_mobile: '+1-555-123-4567',
+          policy_number: 'POL-AIG-789012', claim_amount: '5000.00',
+          street: '123 Main Street', city: 'New York', state: 'NY',
+          postal_code: '10001', country: 'United States',
+          incident_date: '2025-12-15',
+          complaint_description: 'Water damage to home due to burst pipe.',
+        }
+      },
+      allianz_claim: {
+        url: 'https://www.allianz-travel-insurance.com/en_US/claims.html',
+        data: {
+          full_name: 'John Smith', email: 'john.smith@example.com',
+          phone_mobile: '+1-555-123-4567', policy_number: 'ALZ-TRAVEL-456789',
+          claim_amount: '2500.00', passport_number: 'E12345678',
+          incident_date: '2025-11-20',
+          complaint_description: 'Flight cancelled. Incurred additional hotel and rebooking costs.',
+        }
+      },
+      ntuc_claim: {
+        url: 'https://www.income.com.sg/claims',
+        data: {
+          full_name: 'John Smith', nric: 'S1234567A',
+          email: 'john.smith@example.com', phone_mobile: '+6591234567',
+          policy_number: 'NTUC-HC-123456', claim_amount: '3500.00',
+          date_of_birth: '1990-05-15', nationality: 'Singaporean',
+          incident_date: '2025-12-10',
+          complaint_description: 'Hospitalization for appendicitis surgery.',
+        }
+      },
+      httpbin: {
+        url: 'https://httpbin.org/forms/post',
+        intent: 'Run a clean public form-fill demo on a verified public test form',
+        data: {
+          full_name: 'John Smith', email: 'john.smith@example.com',
+          phone_mobile: '+6591234567',
+        }
+      },
+      w3schools: {
+        url: 'https://www.w3schools.com/html/tryit.asp?filename=tryhtml_form_submit',
+        data: { given_name: 'John', family_name: 'Smith' }
+      },
+      demoqa: {
+        url: 'https://demoqa.com/automation-practice-form',
+        intent: 'Show a dense public multi-field form fill',
+        data: {
+          given_name: 'John', family_name: 'Smith',
+          email: 'john.smith@example.com', phone_mobile: '9123456789',
+          gender: 'Male', date_of_birth: '1990-05-15',
+          subject: 'Computer Science', street: '123 Test Street',
+          city: 'Delhi', state: 'NCR',
+        }
+      },
+      register_test: {
+        url: 'https://practice.expandtesting.com/register',
+        data: {
+          username: 'johnsmith90', password: 'SecurePass123!',
+          given_name: 'John', family_name: 'Smith',
+          email: 'john.smith@example.com',
+        }
+      },
+    };
+
+    // ──────────────────────────────────────────────────────────────────
+    // URL Change Detection
+    // ──────────────────────────────────────────────────────────────────
+
+    let urlChangeTimer = null;
+    function normalizeUrlInput(raw) {
+      const value = (raw || '').trim();
+      if (!value) {
+        return { valid: false, error: 'Enter a full URL or a bare domain like httpbin.org' };
+      }
+
+      let normalized = value;
+      if (normalized.startsWith('//')) {
+        normalized = 'https:' + normalized;
+      } else if (/^localhost:/i.test(normalized)) {
+        normalized = 'http://' + normalized;
+      } else if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(normalized)) {
+        if (/^[a-z][a-z0-9+.-]*:/i.test(normalized)) {
+          return { valid: false, error: 'Invalid URL. Use http(s):// or a bare domain like httpbin.org' };
+        }
+        if (!/^(localhost(?::\d+)?|(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?|[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\:\d+)?)(?:[/?#].*)?$/i.test(normalized)) {
+          return { valid: false, error: 'Invalid URL. Enter a full URL or a bare domain like httpbin.org' };
+        }
+        const host = normalized.split('/')[0].split('?')[0].split('#')[0].split(':')[0].toLowerCase();
+        const localHost = host === 'localhost' || host === '127.0.0.1';
+        normalized = (localHost ? 'http://' : 'https://') + normalized;
+      }
+
+      try {
+        const parsed = new URL(normalized);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+          return { valid: false, error: 'Invalid URL. Please use a valid http(s) address.' };
+        }
+        if (!parsed.hostname || (!parsed.hostname.includes('.') && parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1')) {
+          return { valid: false, error: 'Invalid URL. Enter a full URL or a bare domain like httpbin.org' };
+        }
+        return { valid: true, normalized: parsed.toString() };
+      } catch (e) {
+        return { valid: false, error: 'Invalid URL. Please use a valid http(s) address.' };
+      }
+    }
+
+    function normalizeUrlField() {
+      const input = document.getElementById('urlInput');
+      const result = normalizeUrlInput(input.value);
+      if (result.valid) {
+        input.value = result.normalized;
+      }
+      onUrlChange();
+      return result;
+    }
+
+    function onUrlChange() {
+      clearTimeout(urlChangeTimer);
+      const url = document.getElementById('urlInput').value.trim();
+      const badge = document.getElementById('detectionBadge');
+
+      if (!url) {
+        badge.className = 'detection-badge';
+        return;
+      }
+
+      // Show typing indicator
+      urlChangeTimer = setTimeout(() => {
+        const result = normalizeUrlInput(url);
+        if (result.valid) {
+          const hostname = new URL(result.normalized).hostname;
+          badge.className = 'detection-badge success';
+          if (result.normalized !== url) {
+            badge.innerHTML = 'Normalized to <strong>' + result.normalized + '</strong> — click Scan &amp; Map to analyze the form';
+          } else {
+            badge.innerHTML = 'Ready to scan <strong>' + hostname + '</strong> — click Scan &amp; Map to analyze the form';
+          }
+        } else {
+          badge.className = 'detection-badge error';
+          badge.textContent = result.error;
+        }
+      }, 400);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Examples Toggle
+    // ──────────────────────────────────────────────────────────────────
+
+    function toggleExamples(btn) {
+      const panel = document.getElementById('examplesPanel');
+      btn.classList.toggle('open');
+      panel.classList.toggle('open');
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Preset Loading
+    // ──────────────────────────────────────────────────────────────────
+
+    function loadPreset(presetId) {
+      const preset = PRESETS[presetId];
+      if (!preset) return;
+
+      document.getElementById('urlInput').value = preset.url;
+      document.getElementById('intentInput').value = preset.intent || '';
+      onUrlChange();
+
+      // Highlight active
+      document.querySelectorAll('.example-btn').forEach(btn => btn.classList.remove('active'));
+      if (event && event.target) event.target.closest('.example-btn').classList.add('active');
+
+      // Start from a clean slate so each preset reflects only its own demo data.
+      document.querySelectorAll('[data-key]').forEach(input => {
+        input.value = '';
+      });
+
+      if (preset.data) {
+        document.querySelectorAll('[data-key]').forEach(input => {
+          const key = input.dataset.key;
+          if (preset.data[key] !== undefined) {
+            input.value = preset.data[key];
+          }
+        });
+      }
+
+      // Reset genome
+      scannedGenome = null;
+      document.getElementById('genomePreview').innerHTML = '<div class="genome-empty"><div class="genome-empty-icon">&#x1F9EC;</div>Click Scan & Map to analyze this form</div>';
+      document.getElementById('dryRunBtn').disabled = true;
+      document.getElementById('runBtn').disabled = true;
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Tab Switching
+    // ──────────────────────────────────────────────────────────────────
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.data-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.data-panel').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('panel-' + tabName).classList.add('active');
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Profile Management
+    // ──────────────────────────────────────────────────────────────────
+
+    function getUserData() {
+      const data = {};
+      document.querySelectorAll('[data-key]').forEach(input => {
+        const val = input.value ? input.value.trim() : '';
+        if (val) data[input.dataset.key] = val;
+      });
+      return data;
+    }
+
+    function setUserData(data) {
+      document.querySelectorAll('[data-key]').forEach(input => {
+        if (data[input.dataset.key] !== undefined) input.value = data[input.dataset.key];
+      });
+    }
+
+    function saveCurrentProfile() {
+      const profileName = document.getElementById('profileSelect').value;
+      const data = getUserData();
+      const profiles = JSON.parse(localStorage.getItem('grippy_profiles') || '{}');
+      profiles[profileName] = data;
+      localStorage.setItem('grippy_profiles', JSON.stringify(profiles));
+      alert('Profile "' + profileName + '" saved!');
+    }
+
+    function loadProfile() {
+      const profileName = document.getElementById('profileSelect').value;
+      const profiles = JSON.parse(localStorage.getItem('grippy_profiles') || '{}');
+      if (profiles[profileName]) setUserData(profiles[profileName]);
+    }
+
+    function newProfile() {
+      const name = prompt('Enter profile name:');
+      if (!name) return;
+      const select = document.getElementById('profileSelect');
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+      select.value = name;
+      saveCurrentProfile();
+    }
+
+    function loadSavedProfiles() {
+      const profiles = JSON.parse(localStorage.getItem('grippy_profiles') || '{}');
+      const select = document.getElementById('profileSelect');
+      for (const name of Object.keys(profiles)) {
+        if (name === 'default') continue;
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Form Scanning
+    // ──────────────────────────────────────────────────────────────────
+
+    async function scanForm() {
+      const validation = normalizeUrlField();
+      if (!validation.valid) {
+        document.getElementById('detectionBadge').className = 'detection-badge error';
+        document.getElementById('detectionBadge').textContent = validation.error;
+        return;
+      }
+      const url = validation.normalized;
+
+      const scanBtn = document.getElementById('scanBtn');
+      const badge = document.getElementById('detectionBadge');
+      const captchaStatus = document.getElementById('captchaStatus');
+
+      scanBtn.disabled = true;
+      scanBtn.innerHTML = '<span class="loading-spinner"></span>Scanning...';
+      badge.className = 'detection-badge loading';
+      badge.innerHTML = '<span class="loading-spinner"></span>Analyzing form structure...';
+      captchaStatus.className = 'captcha-status';
+
+      try {
+        const userData = getUserData();
+        const response = await fetch('/api/engine/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, user_data: userData, dry_run: true, user_intent: document.getElementById('intentInput').value.trim() }),
+        });
+
+        if (!response.ok) {
+          let detail = 'Scan failed';
+          try {
+            const errorData = await response.json();
+            detail = errorData.detail || detail;
+          } catch (e) {}
+          throw new Error(detail);
+        }
+
+        const { run_id } = await response.json();
+        const evtSource = new EventSource(`/api/status/${run_id}`);
+
+        evtSource.onmessage = function(event) {
+          const data = JSON.parse(event.data);
+
+          if (data.type === 'PROGRESS') {
+            badge.className = 'detection-badge loading';
+            badge.innerHTML = '<span class="loading-spinner"></span>' + data.message;
+
+            if (data.message.toLowerCase().includes('captcha')) {
+              captchaStatus.className = 'captcha-status active';
+              document.getElementById('captchaText').textContent = data.message;
+              if (data.message.toLowerCase().includes('solved') || data.message.toLowerCase().includes('bypassed')) {
+                captchaStatus.className = 'captcha-status active solved';
+              }
+            }
+          }
+
+          if (data.type === 'COMPLETE') {
+            evtSource.close();
+            const result = data.result;
+            const counts = countFields(result.step_mappings);
+
+            badge.className = 'detection-badge success';
+            badge.innerHTML = 'Detected: <strong>' + result.species.replace(/_/g, ' ') + '</strong> &mdash; ' +
+              '<strong>' + counts.mapped + '</strong>/' + counts.total + ' fields mapped' +
+              (result.cache_hit ? ' <span style="opacity:0.6">(cached)</span>' : '') +
+              ' &mdash; <strong>Ready to fill</strong>';
+
+            renderGenomePreview(result);
+            scannedGenome = result;
+            document.getElementById('dryRunBtn').disabled = false;
+            document.getElementById('runBtn').disabled = false;
+            scanBtn.disabled = false;
+            scanBtn.textContent = 'Scan & Map';
+          }
+
+          if (data.type === 'FAILED' || data.type === 'ERROR') {
+            evtSource.close();
+            badge.className = 'detection-badge error';
+            badge.textContent = data.message || 'Scan failed — try a different URL';
+            scanBtn.disabled = false;
+            scanBtn.textContent = 'Scan & Map';
+          }
+        };
+
+        evtSource.onerror = function() {
+          evtSource.close();
+          badge.className = 'detection-badge error';
+          badge.textContent = 'Connection lost during scan — please try again';
+          scanBtn.disabled = false;
+          scanBtn.textContent = 'Scan & Map';
+        };
+
+      } catch (err) {
+        badge.className = 'detection-badge error';
+        badge.textContent = err.message;
+        scanBtn.disabled = false;
+        scanBtn.textContent = 'Scan & Map';
+      }
+    }
+
+    function countFields(stepMappings) {
+      if (!stepMappings) return { total: 0, mapped: 0 };
+      let total = 0, mapped = 0;
+      for (const step of stepMappings) {
+        if (step.mappings) {
+          for (const m of step.mappings) {
+            total++;
+            if (m.user_data_key && m.method !== 'deterministic_no_value') mapped++;
+          }
+        }
+        if (step.unmapped_fields) {
+          for (const u of step.unmapped_fields) {
+            const name = (typeof u === 'string') ? u : (u.name || '');
+            if (name && name !== '(unnamed)') total++;
+          }
+        }
+      }
+      return { total, mapped };
+    }
+
+    function renderGenomePreview(result) {
+      const preview = document.getElementById('genomePreview');
+      if (!result.step_mappings || result.step_mappings.length === 0) {
+        preview.innerHTML = '<div class="genome-empty"><div class="genome-empty-icon">&#x1F9EC;</div>No fields found on this page</div>';
+        return;
+      }
+
+      let totalFields = 0, mappedFields = 0;
+      let html = '';
+
+      for (const step of result.step_mappings) {
+        if (step.mappings) {
+          for (const m of step.mappings) {
+            totalFields++;
+            const hasValue = m.user_data_key && m.method !== 'deterministic_no_value';
+            if (hasValue) mappedFields++;
+
+            const displayName = m.field_name || m.user_data_key || '(unnamed)';
+            const fieldType = m.field_role || 'textbox';
+            const value = m.user_data_key || '';
+
+            html += `<div class="genome-field">
+              <span class="genome-field-type">${fieldType}</span>
+              <span class="genome-field-name">${displayName}</span>
+              ${hasValue
+                ? `<span class="genome-field-value">${value}</span>`
+                : `<span class="genome-field-unmapped">unmapped</span>`
+              }
+            </div>`;
+          }
+        }
+        if (step.unmapped_fields) {
+          for (const u of step.unmapped_fields) {
+            const displayName = (typeof u === 'string') ? u : (u.name || '');
+            if (!displayName || displayName === '(unnamed)') continue;
+            totalFields++;
+            const fieldType = (typeof u === 'object' && u.role) ? u.role : 'unknown';
+            html += `<div class="genome-field">
+              <span class="genome-field-type">${fieldType}</span>
+              <span class="genome-field-name">${displayName}</span>
+              <span class="genome-field-unmapped">unmapped</span>
+            </div>`;
+          }
+        }
+      }
+
+      const statsHtml = `<div class="genome-stats">
+        <div class="genome-stat">
+          <div class="genome-stat-val">${totalFields}</div>
+          <div class="genome-stat-label">Fields Found</div>
+        </div>
+        <div class="genome-stat">
+          <div class="genome-stat-val">${mappedFields}</div>
+          <div class="genome-stat-label">Fields Mapped</div>
+        </div>
+        <div class="genome-stat">
+          <div class="genome-stat-val">${result.species || 'unknown'}</div>
+          <div class="genome-stat-label">Species</div>
+        </div>
+      </div>`;
+
+      preview.innerHTML = statsHtml + html;
+    }
+
+    async function runEngine(dryRun) {
+      const validation = normalizeUrlField();
+      if (!validation.valid) {
+        document.getElementById('detectionBadge').className = 'detection-badge error';
+        document.getElementById('detectionBadge').textContent = validation.error;
+        return;
+      }
+      const url = validation.normalized;
+
+      const userData = getUserData();
+
+      if (dryRun) {
+        if (scannedGenome) {
+          renderGenomePreview(scannedGenome);
+          return;
+        }
+        scanForm();
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/engine/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, user_data: userData, dry_run: false, user_intent: document.getElementById('intentInput').value.trim() }),
+        });
+
+        if (!response.ok) {
+          let detail = 'Failed to start engine';
+          try {
+            const errorData = await response.json();
+            detail = errorData.detail || detail;
+          } catch (e) {}
+          throw new Error(detail);
+        }
+
+        const { run_id } = await response.json();
+        window.location.href = `/demo/status?run_id=${encodeURIComponent(run_id)}&url=${encodeURIComponent(url)}&source=demo`;
+      } catch (err) {
+        alert('Failed to start engine: ' + err.message);
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // Initialize
+    // ──────────────────────────────────────────────────────────────────
+    loadSavedProfiles();
+  </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grippy - Live Filing</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; color: #fafafa; min-height: 100vh; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: #10b981; text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: #a1a1aa; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { color: #fafafa; }
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+    .status-header { text-align: center; margin-bottom: 40px; }
+    .source-badge { display: inline-block; margin-bottom: 14px; padding: 6px 12px; border-radius: 999px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #10b981; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+    .status-header h1 { font-size: 30px; font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; }
+    .status-sub { color: #a1a1aa; font-size: 14px; line-height: 1.6; max-width: 620px; margin: 0 auto 12px; }
+    .target-label { font-size: 16px; font-weight: 700; color: #fafafa; margin-bottom: 8px; }
+    .target-url { font-family: monospace; font-size: 13px; color: #10b981; background: rgba(16,185,129,0.08); padding: 6px 14px; border-radius: 6px; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pipeline { display: flex; flex-direction: column; }
+    .pipeline-step { display: flex; align-items: flex-start; gap: 16px; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .pipeline-step:last-child { border-bottom: none; }
+    .step-indicator { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; transition: all 0.3s; }
+    .step-indicator.pending { background: rgba(255,255,255,0.04); color: #52525b; border: 2px solid rgba(255,255,255,0.08); }
+    .step-indicator.active { background: rgba(16,185,129,0.1); color: #10b981; border: 2px solid #10b981; animation: pulse 1.5s ease-in-out infinite; }
+    .step-indicator.done { background: #10b981; color: #0a0a0a; border: 2px solid #10b981; }
+    .step-indicator.error { background: rgba(239,68,68,0.1); color: #ef4444; border: 2px solid #ef4444; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+    .step-content { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .step-desc { font-size: 13px; color: #71717a; }
+    .log-section { margin-top: 34px; }
+    .log-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #10b981; margin-bottom: 12px; }
+    .log-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px; max-height: 320px; overflow-y: auto; font-family: monospace; font-size: 12px; line-height: 1.8; }
+    .log-entry { color: #a1a1aa; }
+    .log-entry .ts { color: #52525b; }
+    .log-entry .msg { color: #d4d4d8; }
+    .log-entry.ok .msg { color: #10b981; }
+    .log-entry.err .msg { color: #ef4444; }
+    .result-card { margin-top: 34px; border-radius: 16px; padding: 28px; text-align: center; display: none; }
+    .result-card.visible { display: block; }
+    .result-card.success-card { background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.15); }
+    .result-card.error-card { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+    .result-icon { font-size: 44px; margin-bottom: 14px; }
+    .result-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .result-sub { font-size: 14px; color: #a1a1aa; margin-bottom: 20px; line-height: 1.6; white-space: pre-line; }
+    .result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+    .result-stat { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; }
+    .result-stat-val { font-size: 28px; font-weight: 800; color: #10b981; }
+    .result-stat-label { font-size: 11px; color: #71717a; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+    .back-btn { display: inline-block; margin-top: 8px; padding: 12px 28px; background: rgba(255,255,255,0.06); color: #fafafa; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .back-btn:hover { background: rgba(255,255,255,0.1); }
+    @media (max-width: 640px) {
+      .nav { padding: 16px 18px; }
+      .container { padding: 32px 18px; }
+      .result-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">Grippy</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/demo">Demo</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="status-header">
+      <div id="sourceBadge" class="source-badge">Started from chat</div>
+      <h1>Live Filing</h1>
+      <div id="targetLabel" class="target-label"></div>
+      <div id="targetUrl" class="target-url"></div>
+      <p class="status-sub">
+        Grippy is resolving the filing path, sequencing the form, mapping your saved profile, and executing the live browser fill.
+      </p>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-discover">1</div>
+        <div class="step-content">
+          <div class="step-title">Portal discovery</div>
+          <div class="step-desc">Finding the right filing portal for this complaint</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-extract">2</div>
+        <div class="step-content">
+          <div class="step-title">Genome extraction</div>
+          <div class="step-desc">Reading the form structure and available steps</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-classify">3</div>
+        <div class="step-content">
+          <div class="step-title">Classification</div>
+          <div class="step-desc">Identifying the form type and filing context</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-map">4</div>
+        <div class="step-content">
+          <div class="step-title">Field mapping</div>
+          <div class="step-desc">Matching your profile and complaint data to form fields</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-execute">5</div>
+        <div class="step-content">
+          <div class="step-title">Live browser fill</div>
+          <div class="step-desc">Filling the real website in a visible browser window</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-indicator pending" id="ind-submit">6</div>
+        <div class="step-content">
+          <div class="step-title">Submission and cache</div>
+          <div class="step-desc">Submitting the form and saving the genome for fast repeat runs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-section">
+      <div class="log-title">Live Log</div>
+      <div id="logContainer" class="log-container"></div>
+    </div>
+
+    <div id="resultCard" class="result-card">
+      <div id="resultIcon" class="result-icon"></div>
+      <div id="resultTitle" class="result-title"></div>
+      <div id="resultSub" class="result-sub"></div>
+      <div id="resultStats" class="result-stats"></div>
+      <a id="backBtn" href="/chat" class="back-btn">Back</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    let currentRunId = params.get("run_id");
+    const sessionId = params.get("session_id") || "";
+    const source = params.get("source") || "chat";
+    const autoContinue = params.get("autocontinue") === "1";
+    const targetLabel = params.get("target") || "";
+    const targetUrl = params.get("url") || "";
+    let eventSource = null;
+    let currentStep = null;
+    let suppressStreamError = false;
+    let ignoreNextError = false;
+    const stepOrder = ["discover", "extract", "classify", "map", "execute", "submit"];
+
+    const stepMap = {
+      "Looking up": "discover",
+      "Found:": "discover",
+      "Scanning the form": "extract",
+      "Sequencing form genome": "extract",
+      "Sequencing step": "extract",
+      "Cache HIT": "extract",
+      "Classifying form species": "classify",
+      "Mapping user data": "map",
+      "Re-mapping fields": "map",
+      "Executing form fill": "execute",
+      "Opening form": "execute",
+      "Filling step": "execute",
+      "Filled:": "execute",
+      "Submitting form": "submit",
+      "Form genome cached": "submit",
+      "Form submitted": "submit",
+    };
+
+    function setHeader() {
+      document.getElementById("sourceBadge").textContent = source === "demo" ? "Started from demo" : "Started from chat";
+      document.getElementById("targetLabel").textContent = targetLabel || (source === "demo" ? "Live form run" : "Complaint filing flow");
+      const urlEl = document.getElementById("targetUrl");
+      if (targetUrl) {
+        urlEl.textContent = targetUrl;
+      } else {
+        urlEl.textContent = source === "demo" ? "Waiting for target URL..." : "Resolving the filing portal...";
+      }
+      const backBtn = document.getElementById("backBtn");
+      if (source === "demo") {
+        backBtn.href = "/demo";
+        backBtn.textContent = "Back to Demo";
+      } else {
+        backBtn.href = "/chat";
+        backBtn.textContent = "Back to Chat";
+      }
+    }
+
+    function getStepFromMessage(msg) {
+      for (const [keyword, step] of Object.entries(stepMap)) {
+        if (msg.includes(keyword)) return step;
+      }
+      return null;
+    }
+
+    function setStepState(stepId, state) {
+      const ind = document.getElementById("ind-" + stepId);
+      ind.className = "step-indicator " + state;
+      if (state === "done") ind.innerHTML = "&#x2713;";
+      else if (state === "error") ind.innerHTML = "&#x2717;";
+      else ind.textContent = String(stepOrder.indexOf(stepId) + 1);
+    }
+
+    function advanceToStep(stepId) {
+      const idx = stepOrder.indexOf(stepId);
+      if (idx === -1) return;
+      for (let i = 0; i < idx; i += 1) setStepState(stepOrder[i], "done");
+      setStepState(stepId, "active");
+      currentStep = stepId;
+    }
+
+    function addLog(msg, type) {
+      const container = document.getElementById("logContainer");
+      const now = new Date().toLocaleTimeString();
+      const cls = type === "success" ? "ok" : type === "error" ? "err" : "";
+      container.innerHTML += '<div class="log-entry ' + cls + '"><span class="ts">[' + now + ']</span> <span class="msg">' + msg + '</span></div>';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function showResult(kind, message, result = {}) {
+      const card = document.getElementById("resultCard");
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const sub = document.getElementById("resultSub");
+      const stats = document.getElementById("resultStats");
+
+      card.className = "result-card visible " + (kind === "success" ? "success-card" : "error-card");
+      if (kind === "success") {
+        icon.textContent = "✅";
+        title.textContent = "Live filing completed";
+        const confirmation = result.confirmation_number || "";
+        const summary = message || "Grippy completed the live form fill successfully.";
+        sub.textContent = confirmation ? `${summary}\nReference number: ${confirmation}` : summary;
+        const totalTime = result.timing && result.timing.total ? result.timing.total.toFixed(2) + "s" : "N/A";
+        const successes = result.total_successes || 0;
+        const failures = result.total_failures || 0;
+        const rate = result.success_rate !== undefined ? `${Math.round(result.success_rate)}%` : "N/A";
+        stats.innerHTML = '<div class="result-stat"><div class="result-stat-val">' + successes + '</div><div class="result-stat-label">Fields Filled</div></div>' +
+          '<div class="result-stat"><div class="result-stat-val">' + rate + '</div><div class="result-stat-label">Success Rate</div></div>' +
+          '<div class="result-stat"><div class="result-stat-val">' + totalTime + '</div><div class="result-stat-label">Total Time</div></div>';
+      } else {
+        icon.textContent = "❌";
+        title.textContent = kind === "collect" ? "Need more details" : "Live filing stopped";
+        sub.textContent = message || "The run could not be completed.";
+        stats.innerHTML = "";
+      }
+    }
+
+    async function continueFill() {
+      addLog("Form scan finished. Continuing into live filing...", "");
+      const response = await fetch("/api/v3/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId, message: "", action: "continue_fill" }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.run_id) {
+        throw new Error(data.detail || data.reply || "Unable to continue the live filing.");
+      }
+      currentRunId = data.run_id;
+      ignoreNextError = true;
+      startStream(currentRunId);
+    }
+
+    function closeStream() {
+      if (eventSource) {
+        suppressStreamError = true;
+        eventSource.close();
+        eventSource = null;
+      }
+    }
+
+    function markThrough(stepId) {
+      const idx = stepOrder.indexOf(stepId);
+      for (let i = 0; i <= idx; i += 1) setStepState(stepOrder[i], "done");
+      currentStep = stepId;
+    }
+
+    function handleProgressMessage(message) {
+      addLog(message, "");
+      const step = getStepFromMessage(message);
+      if (step) advanceToStep(step);
+    }
+
+    function startStream(runId) {
+      closeStream();
+      setTimeout(() => { suppressStreamError = false; }, 250);
+      eventSource = new EventSource("/api/status/" + runId);
+      eventSource.onmessage = async function(event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "HEARTBEAT") return;
+
+        if (data.url && !params.get("url")) {
+          document.getElementById("targetUrl").textContent = data.url;
+        }
+
+        if (data.type === "PROGRESS") {
+          handleProgressMessage(data.message);
+          return;
+        }
+
+        if (data.type === "SCOUT_COMPLETE") {
+          addLog(data.message, "success");
+          markThrough("map");
+          if (data.url) document.getElementById("targetUrl").textContent = data.url;
+          if (data.action === "start_fill" && autoContinue && sessionId) {
+            try {
+              await continueFill();
+            } catch (error) {
+              if (currentStep) setStepState(currentStep, "error");
+              addLog(error.message || "Unable to continue the live filing.", "error");
+              showResult("error", error.message || "Unable to continue the live filing.");
+            }
+            return;
+          }
+          showResult("collect", data.message || "I need a few more details before I can continue.");
+          closeStream();
+          return;
+        }
+
+        if (data.type === "SCOUT_FAILED") {
+          if (currentStep) setStepState(currentStep, "error");
+          addLog(data.message, "error");
+          showResult("error", data.message || "Portal discovery failed.");
+          closeStream();
+          return;
+        }
+
+        if (data.type === "COMPLETE") {
+          for (const step of stepOrder) setStepState(step, "done");
+          addLog(data.message, "success");
+          showResult("success", data.message, data.result || {});
+          closeStream();
+          return;
+        }
+
+        if (data.type === "FAILED" || data.type === "ERROR") {
+          if (currentStep) setStepState(currentStep, "error");
+          addLog(data.message || "Something went wrong.", "error");
+          showResult("error", data.message || "Something went wrong.");
+          closeStream();
+        }
+      };
+
+      eventSource.onerror = function() {
+        if (ignoreNextError) {
+          ignoreNextError = false;
+          return;
+        }
+        if (suppressStreamError) {
+          suppressStreamError = false;
+          return;
+        }
+        addLog("Connection lost", "error");
+        closeStream();
+      };
+    }
+
+    setHeader();
+    if (currentRunId) {
+      advanceToStep("discover");
+      addLog("Starting Grippy live filing...", "");
+      startStream(currentRunId);
+    } else {
+      addLog("No run ID provided. Go back and start the flow again.", "error");
+      showResult("error", "No run ID was provided for this live filing page.");
+    }
+  </script>
+</body>
+</html>
