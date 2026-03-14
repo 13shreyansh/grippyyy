@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+artifacts/
+.pytest_cache/
+.coverage
+htmlcov/
+playwright-report/
+test_browser_use.py
+test_*.py
+*.db
+*.db-wal
+*.db-shm

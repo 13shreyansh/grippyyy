@@ -1,0 +1,36 @@
+# Grippy V5.5 Dependencies
+# Core Framework
+fastapi>=0.115.0
+uvicorn>=0.30.0
+python-dotenv>=1.0.1
+jinja2>=3.1.4
+pydantic>=2.0.0
+python-multipart>=0.0.9
+
+# AI / LLM
+openai>=1.60.0
+
+# Browser Automation
+playwright>=1.58.0
+playwright-stealth>=2.0.2
+
+# Auth
+pyjwt>=2.9.0
+bcrypt>=4.2.0
+
+# Data / HTTP
+pyyaml>=6.0.2
+requests>=2.32.0
+aiohttp>=3.9.0
+beautifulsoup4>=4.12.0
+
+# Session Store (optional — falls back to in-memory)
+redis>=5.0.0
+
+# Email (optional — SendGrid)
+sendgrid>=6.11.0
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.23.0
+httpx>=0.27.0

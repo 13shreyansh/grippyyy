@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grippy — Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .auth-container {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 420px;
+            max-width: 95vw;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo p { color: rgba(255,255,255,0.6); margin-top: 5px; font-size: 0.9em; }
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            color: rgba(255,255,255,0.5);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            color: #fff;
+            border-bottom-color: #667eea;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-top: 10px;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error-msg {
+            background: rgba(255,59,48,0.15);
+            border: 1px solid rgba(255,59,48,0.3);
+            color: #ff6b6b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .success-msg {
+            background: rgba(52,199,89,0.15);
+            border: 1px solid rgba(52,199,89,0.3);
+            color: #34c759;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .nav-links a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.85em;
+            margin: 0 10px;
+        }
+        .nav-links a:hover { color: #667eea; }
+        .user-panel {
+            display: none;
+            text-align: center;
+        }
+        .user-panel h2 { margin-bottom: 10px; }
+        .user-panel .email { color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <h1>Grippy</h1>
+            <p>The Universal Form & Complaint Solver</p>
+        </div>
+
+        <div id="errorMsg" class="error-msg"></div>
+        <div id="successMsg" class="success-msg"></div>
+
+        <!-- Auth Forms -->
+        <div id="authForms">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('register')">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginPanel" class="form-panel active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email or Username</label>
+                        <input type="text" id="loginEmail" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Your password">
+                    </div>
+                    <button type="submit" class="btn-primary" id="loginBtn">Login</button>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerPanel" class="form-panel">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="regEmail" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" required placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" id="regDisplayName" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" required minlength="6" placeholder="Min 6 characters">
+                    </div>
+                    <button type="submit" class="btn-primary" id="regBtn">Create Account</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Logged In Panel -->
+        <div id="userPanel" class="user-panel">
+            <h2 id="userName">Welcome!</h2>
+            <p class="email" id="userEmail"></p>
+            <a href="/chat"><button class="btn-primary">Go to Chat</button></a>
+            <a href="/dashboard"><button class="btn-secondary">View Dashboard</button></a>
+            <a href="/api-docs"><button class="btn-secondary">API Documentation</button></a>
+            <button class="btn-secondary" onclick="handleLogout()" style="margin-top:20px; color:#ff6b6b;">Logout</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/chat">Chat</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        const TOKEN_KEY = 'grippy_token';
+
+        // Check if already logged in
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                try {
+                    const resp = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        showUserPanel(data.user);
+                        return;
+                    }
+                } catch (e) {}
+                localStorage.removeItem(TOKEN_KEY);
+            }
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+            if (tab === 'login') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('loginPanel').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('registerPanel').classList.add('active');
+            }
+            hideMessages();
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showUserPanel(user) {
+            document.getElementById('authForms').style.display = 'none';
+            document.getElementById('userPanel').style.display = 'block';
+            document.getElementById('userName').textContent =
+                `Welcome, ${user.display_name || user.username}!`;
+            document.getElementById('userEmail').textContent = user.email;
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            hideMessages();
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            try {
+                const resp = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email_or_username: document.getElementById('loginEmail').value,
+                        password: document.getElementById('loginPassword').value,
+                    }),
+                });
+
+                const data = await resp.json();
+                if (resp.ok && data.token) {
+                    localStorage.setItem(TOKEN_KEY, data.token);
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => window.location.href = '/chat', 1000);
+                } else {
+                    showError(data.detail || data.error || 'Login failed');
+                }
+            } catch (err) {
+                showError('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            hideMessages();
+            const btn = document.getElementById('regBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            try {
+                const resp = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('regEmail').value,
+                        username: document.getElementById('regUsername').value,
+                        display_name: document.getElementById('regDisplayName').value,
+                        password: document.getElementById('regPassword').value,
+                    }),
+                });
+
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    if (data.token) {
+                        localStorage.setItem(TOKEN_KEY, data.token);
+                    }
+                    showSuccess('Account created! You can now login.');
+                    switchTab('login');
+                } else {
+                    showError(data.detail || data.error || 'Registration failed');
+                }
+            } catch (err) {
+                showError('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        async function handleLogout() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+                } catch (e) {}
+            }
+            localStorage.removeItem(TOKEN_KEY);
+            document.getElementById('authForms').style.display = 'block';
+            document.getElementById('userPanel').style.display = 'none';
+            showSuccess('Logged out successfully.');
+        }
+    </script>
+</body>
+</html>

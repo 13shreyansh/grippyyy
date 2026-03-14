@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grippy — API Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 1px solid #30363d;
+        }
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p { color: #8b949e; margin-top: 8px; }
+        nav {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        nav a:hover { text-decoration: underline; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .section { margin-bottom: 40px; }
+        .section h2 {
+            color: #f0f6fc;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+        .section h3 {
+            color: #f0f6fc;
+            font-size: 1.1em;
+            margin: 20px 0 10px;
+        }
+        .endpoint {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .method {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .method.get { background: #1f6feb33; color: #58a6ff; }
+        .method.post { background: #238636; color: #fff; }
+        .method.delete { background: #da363333; color: #f85149; }
+        .path { font-family: monospace; color: #f0f6fc; font-size: 1em; }
+        .desc { color: #8b949e; font-size: 0.9em; margin-bottom: 12px; }
+        pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        code { color: #79c0ff; }
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.85em;
+        }
+        .param-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #30363d;
+            color: #f0f6fc;
+        }
+        .param-table td {
+            padding: 8px;
+            border-bottom: 1px solid #21262d;
+        }
+        .required { color: #f85149; font-size: 0.75em; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .badge-free { background: #238636; color: #fff; }
+        .badge-pro { background: #1f6feb; color: #fff; }
+        .badge-enterprise { background: #8957e5; color: #fff; }
+        .auth-note {
+            background: #1f6feb22;
+            border-left: 3px solid #1f6feb;
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Grippy B2B API</h1>
+        <p>Programmatic access to the universal form and complaint solver</p>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/chat">Chat</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/login">Login</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <!-- Quick Start -->
+        <div class="section">
+            <h2>Quick Start</h2>
+            <p>Get started with the Grippy API in 3 steps:</p>
+            <div class="endpoint">
+                <h3>1. Create an account and get an API key</h3>
+<pre><code># Register
+curl -X POST /api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@co.com","username":"dev","password":"secret123"}'
+
+# Login to get JWT token
+curl -X POST /api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email_or_username":"dev","password":"secret123"}'
+# Returns: {"token": "eyJ..."}
+
+# Create an API key
+curl -X POST /api/b2b/keys \
+  -H "Authorization: Bearer eyJ..." \
+  -H "Content-Type: application/json" \
+  -d '{"name":"my_app","tier":"free"}'
+# Returns: {"key": "grp_live_abc123...", "key_id": "..."}</code></pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>2. Submit a complaint</h3>
+<pre><code>curl -X POST /api/b2b/complaint \
+  -H "X-API-Key: grp_live_abc123..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "company": "IndiGo Airlines",
+    "issue": "Flight 6E-2341 delayed 5 hours, no food provided",
+    "user_name": "Rahul Sharma",
+    "user_email": "rahul@example.com",
+    "action": "auto"
+  }'
+# Returns: {"complaint_id": "...", "task_id": "..."}</code></pre>
+            </div>
+
+            <div class="endpoint">
+                <h3>3. Check the result</h3>
+<pre><code>curl /api/v3/tasks/TASK_ID \
+  -H "X-API-Key: grp_live_abc123..."
+# Returns: {"status": "completed", "result": {...}}</code></pre>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="section">
+            <h2>Authentication</h2>
+            <div class="auth-note">
+                All B2B API endpoints require an <code>X-API-Key</code> header.
+                API keys are created through the <code>/api/b2b/keys</code> endpoint using JWT authentication.
+            </div>
+        </div>
+
+        <!-- Endpoints -->
+        <div class="section">
+            <h2>B2B Endpoints</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/b2b/complaint</span>
+                </div>
+                <div class="desc">Submit a complaint for automated processing. Grippy will find the right form, draft an email, and optionally send it.</div>
+                <table class="param-table">
+                    <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                    <tr><td>company <span class="required">required</span></td><td>string</td><td>Company name to complain against</td></tr>
+                    <tr><td>issue <span class="required">required</span></td><td>string</td><td>Detailed description of the complaint</td></tr>
+                    <tr><td>user_name</td><td>string</td><td>Complainant's full name</td></tr>
+                    <tr><td>user_email</td><td>string</td><td>Complainant's email address</td></tr>
+                    <tr><td>user_phone</td><td>string</td><td>Complainant's phone number</td></tr>
+                    <tr><td>action</td><td>string</td><td>One of: auto, email, form, escalate (default: auto)</td></tr>
+                </table>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/b2b/complaint/{complaint_id}</span>
+                </div>
+                <div class="desc">Get the status and details of a submitted complaint.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/b2b/keys</span>
+                </div>
+                <div class="desc">Create a new API key. Requires JWT auth via Authorization header.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/b2b/keys</span>
+                </div>
+                <div class="desc">List all API keys for the authenticated user.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/b2b/keys/revoke</span>
+                </div>
+                <div class="desc">Revoke an API key.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/b2b/usage</span>
+                </div>
+                <div class="desc">Get API usage statistics for your key.</div>
+            </div>
+        </div>
+
+        <!-- Other Endpoints -->
+        <div class="section">
+            <h2>Other Useful Endpoints</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/v3/search?q={query}</span>
+                </div>
+                <div class="desc">Search the web for complaint forms and company info.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/v3/tasks/submit</span>
+                </div>
+                <div class="desc">Submit a background form-fill task. Returns a task_id for polling.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/v3/tasks/{task_id}</span>
+                </div>
+                <div class="desc">Check the status and result of a background task.</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/health</span>
+                </div>
+                <div class="desc">System health check — browser pool, email, scheduler, search, task queue.</div>
+            </div>
+        </div>
+
+        <!-- Rate Limits -->
+        <div class="section">
+            <h2>Rate Limits</h2>
+            <table class="param-table">
+                <tr><th>Tier</th><th>Requests/Day</th><th>Complaints/Month</th><th>Price</th></tr>
+                <tr>
+                    <td><span class="badge badge-free">Free</span></td>
+                    <td>100</td><td>10</td><td>$0</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-pro">Pro</span></td>
+                    <td>5,000</td><td>500</td><td>$49/mo</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-enterprise">Enterprise</span></td>
+                    <td>Unlimited</td><td>Unlimited</td><td>Contact us</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Legal -->
+        <div class="section" style="color:#8b949e; font-size:0.85em; text-align:center; padding-top:20px; border-top:1px solid #30363d;">
+            <p>Grippy is an AI assistant that helps draft complaints and navigate forms.</p>
+            <p>It does not provide legal advice. Users are responsible for verifying all information before submission.</p>
+        </div>
+    </div>
+</body>
+</html>

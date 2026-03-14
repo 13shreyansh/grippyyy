@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grippy - Live Form Fill</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a0a; color: #fafafa; min-height: 100vh; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: #10b981; text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: #a1a1aa; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .nav-links a:hover { color: #fafafa; }
+    .container { max-width: 700px; margin: 0 auto; padding: 48px 24px; }
+    .status-header { text-align: center; margin-bottom: 48px; }
+    .status-header h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+    .target-url { font-family: monospace; font-size: 13px; color: #10b981; background: rgba(16,185,129,0.08); padding: 6px 14px; border-radius: 6px; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pipeline { display: flex; flex-direction: column; }
+    .pipeline-step { display: flex; align-items: flex-start; gap: 16px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .pipeline-step:last-child { border-bottom: none; }
+    .step-indicator { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; transition: all 0.3s; }
+    .step-indicator.pending { background: rgba(255,255,255,0.04); color: #52525b; border: 2px solid rgba(255,255,255,0.08); }
+    .step-indicator.active { background: rgba(16,185,129,0.1); color: #10b981; border: 2px solid #10b981; animation: pulse 1.5s ease-in-out infinite; }
+    .step-indicator.done { background: #10b981; color: #0a0a0a; border: 2px solid #10b981; }
+    .step-indicator.error { background: rgba(239,68,68,0.1); color: #ef4444; border: 2px solid #ef4444; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+    .step-content { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .step-desc { font-size: 13px; color: #71717a; }
+    .step-time { font-size: 12px; color: #10b981; font-family: monospace; margin-top: 4px; }
+    .log-section { margin-top: 40px; }
+    .log-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #10b981; margin-bottom: 12px; }
+    .log-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; line-height: 1.8; }
+    .log-entry { color: #a1a1aa; }
+    .log-entry .ts { color: #52525b; }
+    .log-entry .msg { color: #d4d4d8; }
+    .log-entry.ok .msg { color: #10b981; }
+    .log-entry.err .msg { color: #ef4444; }
+    .result-card { margin-top: 40px; border-radius: 16px; padding: 32px; text-align: center; display: none; }
+    .result-card.visible { display: block; }
+    .result-card.success-card { background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.15); }
+    .result-card.error-card { background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); }
+    .result-icon { font-size: 48px; margin-bottom: 16px; }
+    .result-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .result-sub { font-size: 14px; color: #a1a1aa; margin-bottom: 24px; }
+    .result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .result-stat { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; }
+    .result-stat-val { font-size: 28px; font-weight: 800; color: #10b981; }
+    .result-stat-label { font-size: 11px; color: #71717a; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+    .back-btn { display: inline-block; margin-top: 32px; padding: 12px 28px; background: rgba(255,255,255,0.06); color: #fafafa; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .back-btn:hover { background: rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-logo">Grippy</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/demo">Demo</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="status-header">
+      <h1>Live Form Fill</h1>
+      <div id="targetUrl" class="target-url"></div>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step" id="step-extract">
+        <div class="step-indicator pending" id="ind-extract">1</div>
+        <div class="step-content">
+          <div class="step-title">Genome Extraction</div>
+          <div class="step-desc">Sequencing the form DNA via Accessibility Tree</div>
+          <div class="step-time" id="time-extract"></div>
+        </div>
+      </div>
+      <div class="pipeline-step" id="step-classify">
+        <div class="step-indicator pending" id="ind-classify">2</div>
+        <div class="step-content">
+          <div class="step-title">Classification</div>
+          <div class="step-desc">Identifying the form species</div>
+          <div class="step-time" id="time-classify"></div>
+        </div>
+      </div>
+      <div class="pipeline-step" id="step-map">
+        <div class="step-indicator pending" id="ind-map">3</div>
+        <div class="step-content">
+          <div class="step-title">Field Mapping</div>
+          <div class="step-desc">Matching your data to form fields</div>
+          <div class="step-time" id="time-map"></div>
+        </div>
+      </div>
+      <div class="pipeline-step" id="step-execute">
+        <div class="step-indicator pending" id="ind-execute">4</div>
+        <div class="step-content">
+          <div class="step-title">Execution</div>
+          <div class="step-desc">Filling the form with Playwright</div>
+          <div class="step-time" id="time-execute"></div>
+        </div>
+      </div>
+      <div class="pipeline-step" id="step-cache">
+        <div class="step-indicator pending" id="ind-cache">5</div>
+        <div class="step-content">
+          <div class="step-title">Cache and Verify</div>
+          <div class="step-desc">Saving genome for future instant fills</div>
+          <div class="step-time" id="time-cache"></div>
+        </div>
+      </div>
+    </div>
+    <div class="log-section">
+      <div class="log-title">Live Log</div>
+      <div id="logContainer" class="log-container"></div>
+    </div>
+    <div id="resultCard" class="result-card">
+      <div id="resultIcon" class="result-icon"></div>
+      <div id="resultTitle" class="result-title"></div>
+      <div id="resultSub" class="result-sub"></div>
+      <div id="resultStats" class="result-stats"></div>
+      <a href="/demo" class="back-btn">Back to Demo</a>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const runId = params.get("run_id");
+    const targetUrl = params.get("url") || "";
+    document.getElementById("targetUrl").textContent = targetUrl;
+
+    const stepMap = {
+      "Sequencing form genome": "extract",
+      "Cache HIT": "extract",
+      "Classifying form species": "classify",
+      "Mapping user data": "map",
+      "Executing form fill": "execute",
+      "Filling field": "execute",
+      "Selected dropdown": "execute",
+      "Form genome cached": "cache",
+      "Form submitted": "cache",
+      "Self-healing": "execute",
+      "High failure rate": "execute"
+    };
+
+    let currentStep = null;
+    const stepOrder = ["extract", "classify", "map", "execute", "cache"];
+
+    function getStepFromMessage(msg) {
+      for (const [keyword, step] of Object.entries(stepMap)) {
+        if (msg.includes(keyword)) return step;
+      }
+      return null;
+    }
+
+    function setStepState(stepId, state) {
+      const ind = document.getElementById("ind-" + stepId);
+      ind.className = "step-indicator " + state;
+      if (state === "done") {
+        ind.innerHTML = "&#x2713;";
+      } else if (state === "error") {
+        ind.innerHTML = "&#x2717;";
+      }
+    }
+
+    function advanceToStep(stepId) {
+      const idx = stepOrder.indexOf(stepId);
+      if (idx === -1) return;
+      for (let i = 0; i < idx; i++) {
+        setStepState(stepOrder[i], "done");
+      }
+      setStepState(stepId, "active");
+      currentStep = stepId;
+    }
+
+    function addLog(msg, type) {
+      const container = document.getElementById("logContainer");
+      const now = new Date().toLocaleTimeString();
+      const cls = type === "success" ? "ok" : type === "error" ? "err" : "";
+      container.innerHTML += '<div class="log-entry ' + cls + '"><span class="ts">[' + now + ']</span> <span class="msg">' + msg + '</span></div>';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function showResult(data) {
+      const card = document.getElementById("resultCard");
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const sub = document.getElementById("resultSub");
+      const stats = document.getElementById("resultStats");
+
+      if (data.success || data.type === "COMPLETE") {
+        const r = data.result || data;
+        card.className = "result-card visible success-card";
+        icon.textContent = "✅";
+        title.textContent = "Form Filled Successfully";
+        sub.textContent = "The Form Genome Engine completed the fill.";
+        const totalTime = r.timing && r.timing.total ? r.timing.total.toFixed(2) + "s" : "N/A";
+        const successes = r.total_successes || 0;
+        const failures = r.total_failures || 0;
+        stats.innerHTML = '<div class="result-stat"><div class="result-stat-val">' + successes + '</div><div class="result-stat-label">Fields Filled</div></div>' +
+          '<div class="result-stat"><div class="result-stat-val">' + failures + '</div><div class="result-stat-label">Failures</div></div>' +
+          '<div class="result-stat"><div class="result-stat-val">' + totalTime + '</div><div class="result-stat-label">Total Time</div></div>';
+      } else {
+        card.className = "result-card visible error-card";
+        icon.textContent = "❌";
+        title.textContent = "Form Fill Failed";
+        sub.textContent = data.message || "An error occurred during form filling.";
+        stats.innerHTML = "";
+      }
+    }
+
+    if (runId) {
+      advanceToStep("extract");
+      addLog("Starting Form Genome Engine...", "");
+
+      const evtSource = new EventSource("/api/status/" + runId);
+      evtSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "HEARTBEAT") return;
+
+        if (data.type === "PROGRESS") {
+          addLog(data.message, "");
+          const step = getStepFromMessage(data.message);
+          if (step) advanceToStep(step);
+        }
+
+        if (data.type === "COMPLETE") {
+          evtSource.close();
+          for (const s of stepOrder) setStepState(s, "done");
+          addLog(data.message, "success");
+          showResult(data);
+        }
+
+        if (data.type === "FAILED" || data.type === "ERROR") {
+          evtSource.close();
+          if (currentStep) setStepState(currentStep, "error");
+          addLog(data.message, "error");
+          showResult(data);
+        }
+      };
+
+      evtSource.onerror = function() {
+        evtSource.close();
+        addLog("Connection lost", "error");
+      };
+    } else {
+      addLog("No run ID provided. Go back to the demo page.", "error");
+    }
+  </script>
+</body>
+</html>

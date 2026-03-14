@@ -1,0 +1,372 @@
+{
+  "url": "https://crdcomplaints.azurewebsites.net/",
+  "timestamp": "2026-03-12T14:39:26.005556+00:00",
+  "steps": [
+    {
+      "step_number": 1,
+      "url": "https://crdcomplaints.azurewebsites.net/",
+      "fields": [
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Given name *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Given name *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "Family name *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Family name *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "NRIC number *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='NRIC number *')",
+          "required": true
+        },
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Year of birth *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Year of birth *')",
+          "required": true
+        },
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "combobox",
+          "name": "",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('combobox')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Email address *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Email address *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "Phone number (mobile) *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Phone number (mobile) *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "Phone number (home)",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Phone number (home)')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Phone number (office)",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Phone number (office)')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Fax number",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Fax number')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Block/house number *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Block/house number *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "Street *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Street *')",
+          "required": true
+        },
+        {
+          "role": "textbox",
+          "name": "Unit number",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Unit number')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Building/estate name",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Building/estate name')",
+          "required": false
+        },
+        {
+          "role": "textbox",
+          "name": "Postal code *",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('textbox', name='Postal code *')",
+          "required": true
+        }
+      ],
+      "buttons": [
+        {
+          "role": "link",
+          "name": "Reset",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('link', name='Reset')"
+        }
+      ],
+      "nav_buttons": [
+        {
+          "role": "link",
+          "name": "Next Step",
+          "value": "",
+          "attributes": {},
+          "selector": "get_by_role('link', name='Next Step')"
+        }
+      ],
+      "submit_buttons": []
+    }
+  ],
+  "fields": [
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Given name *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Given name *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "Family name *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Family name *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "NRIC number *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='NRIC number *')",
+      "required": true
+    },
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Year of birth *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Year of birth *')",
+      "required": true
+    },
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "combobox",
+      "name": "",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('combobox')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Email address *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Email address *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "Phone number (mobile) *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Phone number (mobile) *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "Phone number (home)",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Phone number (home)')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Phone number (office)",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Phone number (office)')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Fax number",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Fax number')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Block/house number *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Block/house number *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "Street *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Street *')",
+      "required": true
+    },
+    {
+      "role": "textbox",
+      "name": "Unit number",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Unit number')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Building/estate name",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Building/estate name')",
+      "required": false
+    },
+    {
+      "role": "textbox",
+      "name": "Postal code *",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('textbox', name='Postal code *')",
+      "required": true
+    }
+  ],
+  "buttons": [
+    {
+      "role": "link",
+      "name": "Reset",
+      "value": "",
+      "attributes": {},
+      "selector": "get_by_role('link', name='Reset')"
+    }
+  ],
+  "submit_buttons": [],
+  "structure": {
+    "total_fields": 20,
+    "field_types": {
+      "combobox": 6,
+      "textbox": 14
+    },
+    "has_multi_step": false,
+    "step_count": 1
+  }
+}

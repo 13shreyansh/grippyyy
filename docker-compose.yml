@@ -1,0 +1,20 @@
+services:
+  grippy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      GRIPPY_JWT_SECRET: dev-local-secret
+      REDIS_URL: redis://redis:6379/0
+      ALLOWED_ORIGINS: http://localhost:8000
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped

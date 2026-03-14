@@ -1,0 +1,128 @@
+[
+  {
+    "site": "case",
+    "name": "CASE Singapore (Consumer Complaint)",
+    "url": "https://www.case.org.sg/file-a-complaint-test/",
+    "dry_run": {
+      "total_fields": 2,
+      "mapped": 1,
+      "unmapped": 0,
+      "species": "consumer_complaint",
+      "time": 38.76,
+      "field_check": "FAIL"
+    },
+    "cache": {
+      "hit": false,
+      "time": 38.9259,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  },
+  {
+    "site": "httpbin",
+    "name": "httpbin.org (Pizza Order \u2014 Radios + Checkboxes)",
+    "url": "https://httpbin.org/forms/post",
+    "dry_run": {
+      "total_fields": 12,
+      "mapped": 5,
+      "unmapped": 0,
+      "species": "generic_personal_info",
+      "time": 5.27,
+      "field_check": "PASS"
+    },
+    "cache": {
+      "hit": false,
+      "time": 5.6871,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  },
+  {
+    "site": "w3schools",
+    "name": "W3Schools (Simple Contact Form)",
+    "url": "https://www.w3schools.com/html/tryit.asp?filename=tryhtml_form_submit",
+    "dry_run": {
+      "total_fields": 2,
+      "mapped": 2,
+      "unmapped": 0,
+      "species": "unknown",
+      "time": 27.0,
+      "field_check": "PASS"
+    },
+    "cache": {
+      "hit": false,
+      "time": 22.7137,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  },
+  {
+    "site": "formspark",
+    "name": "Formspark Demo (Contact Form)",
+    "url": "https://submit-form.com/echo",
+    "dry_run": {
+      "total_fields": 0,
+      "mapped": 0,
+      "unmapped": 0,
+      "species": "unknown",
+      "time": 11.69,
+      "field_check": "PASS"
+    },
+    "cache": {
+      "hit": false,
+      "time": 11.8045,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  },
+  {
+    "site": "jotform",
+    "name": "JotForm Sample (Registration Form)",
+    "url": "https://form.jotform.com/233096874498074",
+    "dry_run": {
+      "total_fields": 0,
+      "mapped": 0,
+      "unmapped": 0,
+      "species": "unknown",
+      "time": 13.3,
+      "field_check": "FAIL"
+    },
+    "cache": {
+      "hit": false,
+      "time": 13.9339,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  },
+  {
+    "site": "google_form",
+    "name": "Google Forms (Public Survey)",
+    "url": "https://docs.google.com/forms/d/e/1FAIpQLScVKyG3uMwXsQ3gJarelY0hhBbGM3QKNBQ-q0p-ZZHQwDDyBQ/viewform",
+    "dry_run": {
+      "total_fields": 4,
+      "mapped": 3,
+      "unmapped": 0,
+      "species": "consumer_complaint",
+      "time": 17.76,
+      "field_check": "PASS"
+    },
+    "cache": {
+      "hit": false,
+      "time": 17.6134,
+      "check": "FAIL"
+    },
+    "live": null,
+    "status": "FAIL",
+    "error": null
+  }
+]

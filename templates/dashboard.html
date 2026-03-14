@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grippy — Complaint Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a26;
+      --surface3: #222233;
+      --border: #2a2a3e;
+      --border-light: #3a3a50;
+      --text: #e8e8f0;
+      --text-dim: #8888a8;
+      --text-muted: #5a5a78;
+      --accent: #6c5ce7;
+      --accent-light: #a29bfe;
+      --accent-glow: rgba(108,92,231,0.15);
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.15);
+      --orange: #fdcb6e;
+      --orange-dim: rgba(253,203,110,0.15);
+      --red: #e17055;
+      --red-dim: rgba(225,112,85,0.15);
+      --blue: #74b9ff;
+      --blue-dim: rgba(116,185,255,0.15);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .logo {
+      font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none; font-size: 14px;
+      padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text); background: var(--surface2);
+    }
+
+    /* Main */
+    .main { max-width: 1200px; margin: 0 auto; padding: 32px; }
+    .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-subtitle { color: var(--text-dim); font-size: 15px; margin-bottom: 32px; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+    }
+    .stat-label { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; }
+    .stat-value.green { color: var(--green); }
+    .stat-value.orange { color: var(--orange); }
+    .stat-value.red { color: var(--red); }
+    .stat-value.blue { color: var(--blue); }
+
+    /* Complaints Table */
+    .section-title {
+      font-size: 18px; font-weight: 600; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .complaints-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .complaints-table th {
+      text-align: left; padding: 14px 16px; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-dim); background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .complaints-table td {
+      padding: 14px 16px; font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .complaints-table tr:last-child td { border-bottom: none; }
+    .complaints-table tr:hover td { background: var(--surface2); }
+
+    .status-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+    }
+    .status-badge.pending { background: var(--orange-dim); color: var(--orange); }
+    .status-badge.email_sent { background: var(--blue-dim); color: var(--blue); }
+    .status-badge.form_filled { background: var(--accent-glow); color: var(--accent-light); }
+    .status-badge.escalated { background: var(--red-dim); color: var(--red); }
+    .status-badge.resolved { background: var(--green-dim); color: var(--green); }
+
+    .action-btn {
+      padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text); font-size: 12px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent-light); }
+    .action-btn.resolve { border-color: var(--green); color: var(--green); }
+    .action-btn.resolve:hover { background: var(--green-dim); }
+
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--text-dim);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state p { font-size: 15px; margin-bottom: 16px; }
+    .empty-state a {
+      color: var(--accent-light); text-decoration: none;
+      padding: 10px 24px; border: 1px solid var(--accent);
+      border-radius: 8px; display: inline-block; transition: all 0.2s;
+    }
+    .empty-state a:hover { background: var(--accent-glow); }
+
+    .disclaimer {
+      text-align: center; padding: 24px; color: var(--text-muted);
+      font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .main { padding: 16px; }
+      .complaints-table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="/" class="logo">Grippy</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/chat">Chat</a>
+        <a href="/dashboard" class="active">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <h1 class="page-title">Complaint Dashboard</h1>
+    <p class="page-subtitle">Track all your complaints, their status, and next actions.</p>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-label">Total Complaints</div><div class="stat-value blue" id="statTotal">-</div></div>
+      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value orange" id="statPending">-</div></div>
+      <div class="stat-card"><div class="stat-label">Escalated</div><div class="stat-value red" id="statEscalated">-</div></div>
+      <div class="stat-card"><div class="stat-label">Resolved</div><div class="stat-value green" id="statResolved">-</div></div>
+    </div>
+
+    <div class="section-title">
+      <span>Active Complaints</span>
+      <a href="/chat" class="action-btn">+ New Complaint</a>
+    </div>
+
+    <div id="complaintsContainer"></div>
+  </div>
+
+  <div class="disclaimer">
+    Grippy is a complaint filing assistant. It does not provide legal advice.
+    For legal matters, consult a qualified attorney.
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadStats();
+  await loadComplaints();
+});
+
+async function loadStats() {
+  try {
+    const res = await fetch('/api/v3/complaints/stats/overview');
+    const data = await res.json();
+    document.getElementById('statTotal').textContent = data.total || 0;
+    document.getElementById('statPending').textContent = data.by_status?.pending || 0;
+    document.getElementById('statEscalated').textContent = data.by_status?.escalated || 0;
+    document.getElementById('statResolved').textContent = data.by_status?.resolved || 0;
+  } catch (e) {
+    console.error('Failed to load stats:', e);
+  }
+}
+
+async function loadComplaints() {
+  const container = document.getElementById('complaintsContainer');
+  try {
+    const res = await fetch('/api/v3/complaints');
+    const data = await res.json();
+    const complaints = data.complaints || [];
+
+    if (complaints.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">&#128221;</div>
+          <p>No complaints filed yet. Start a conversation to file your first complaint.</p>
+          <a href="/chat">Start a Complaint</a>
+        </div>`;
+      return;
+    }
+
+    let html = `
+      <table class="complaints-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Industry</th>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Filed</th>
+            <th>Next Action</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    for (const c of complaints) {
+      const filed = c.created_at ? new Date(c.created_at).toLocaleDateString() : '-';
+      const nextAction = c.next_action_date ? new Date(c.next_action_date).toLocaleDateString() : '-';
+      const summary = (c.issue_summary || '').substring(0, 60) + ((c.issue_summary || '').length > 60 ? '...' : '');
+      const statusClass = (c.status || 'pending').replace(/\s+/g, '_');
+
+      html += `
+        <tr>
+          <td><strong>${c.company || '-'}</strong></td>
+          <td>${c.industry || '-'}</td>
+          <td>${summary || '-'}</td>
+          <td><span class="status-badge ${statusClass}">${c.status || 'pending'}</span></td>
+          <td>${filed}</td>
+          <td>${nextAction}</td>
+          <td>
+            ${c.status !== 'resolved' ? `<button class="action-btn resolve" onclick="resolveComplaint('${c.id}')">Resolve</button>` : '<span style="color:var(--green);">Done</span>'}
+          </td>
+        </tr>`;
+    }
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  } catch (e) {
+    container.innerHTML = '<p style="color:var(--red);">Failed to load complaints.</p>';
+    console.error(e);
+  }
+}
+
+async function resolveComplaint(id) {
+  if (!confirm('Mark this complaint as resolved?')) return;
+  try {
+    await fetch(`/api/v3/complaints/${id}/resolve`, { method: 'POST' });
+    await loadStats();
+    await loadComplaints();
+  } catch (e) {
+    alert('Failed to resolve complaint.');
+  }
+}
+</script>
+</body>
+</html>

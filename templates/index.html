@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grippy — Your Complaints, Solved</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #fafafa;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .nav-logo {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #10b981;
+    }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fafafa; }
+    .hero {
+      text-align: center;
+      padding: 100px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    h1 .accent { color: #10b981; }
+    .subtitle {
+      font-size: 20px;
+      color: #a1a1aa;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 48px;
+    }
+    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: #10b981;
+      color: #0a0a0a;
+    }
+    .btn-primary:hover { background: #34d399; transform: translateY(-1px); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      color: #fafafa;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      max-width: 700px;
+      margin: 80px auto 0;
+    }
+    .stat {
+      background: #0a0a0a;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 36px;
+      font-weight: 900;
+      color: #10b981;
+      letter-spacing: -1px;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #71717a;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 100px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .feature {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    .feature h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature p {
+      font-size: 14px;
+      color: #a1a1aa;
+      line-height: 1.6;
+    }
+    .how-it-works {
+      max-width: 800px;
+      margin: 100px auto 0;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .how-it-works h2 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 48px;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      text-align: left;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .step-content h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      font-size: 14px;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+    .footer {
+      text-align: center;
+      padding: 80px 24px 40px;
+      color: #52525b;
+      font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: 1fr; }
+      .nav { padding: 16px 20px; }
+      .hero { padding: 60px 20px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-logo">Grippy</div>
+    <div class="nav-links">
+      <a href="/demo">Demo</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="badge">Form Genome Engine</div>
+    <h1>Draft complaints and <span class="accent">fill live forms</span></h1>
+    <p class="subtitle">
+      Grippy combines complaint guidance with a live browser form engine.
+      Today's product demo focuses on known-company complaint drafting and verified public form fills.
+    </p>
+    <div class="cta-group">
+      <a href="/demo" class="btn btn-primary">Try the Demo</a>
+      <a href="/chat" class="btn btn-secondary">Chat to File Complaint</a>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">Live</div>
+      <div class="stat-label">Complaint drafting</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">Real</div>
+      <div class="stat-label">Browser automation</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">Known</div>
+      <div class="stat-label">Complaint workflows</div>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">&#x1F9EC;</div>
+      <h3>Form DNA Sequencing</h3>
+      <p>Grippy extracts the visible structure of a live web form so it can reason about fields, options, and next actions.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#x1F9E0;</div>
+      <h3>Intelligent Field Mapping</h3>
+      <p>Deterministic field matching handles common form labels, with model assistance available when the form is ambiguous.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#x26A1;</div>
+      <h3>Precision Execution</h3>
+      <p>Playwright fills fields with surgical precision. Handles dropdowns, radios, checkboxes, date pickers, and custom components.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#x1F4BE;</div>
+      <h3>Form Genome Cache</h3>
+      <p>Previously scanned forms can be reused so repeat runs avoid paying the full extraction cost every time.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#x1FA79;</div>
+      <h3>Self-Healing</h3>
+      <p>If a form changes enough to break cached behavior, Grippy can invalidate stale cache entries and retry with a fresh scan.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#x1F30D;</div>
+      <h3>Broad Coverage</h3>
+      <p>The engine is designed for public forms across complaint, registration, and service workflows, and the demo focuses on verified live paths.</p>
+    </div>
+  </section>
+
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Sequence</h4>
+          <p>Navigate to the URL, capture the Accessibility Tree, and extract the form's DNA — every field, label, option, and button.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Classify</h4>
+          <p>Identify the form species (complaint, tax, visa, registration) using keyword fingerprinting. No LLM needed.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Map</h4>
+          <p>Match your data to form fields using a synonym dictionary. Unnamed fields get mapped by an LLM fallback with deduplication.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Execute</h4>
+          <p>Fill every field with Playwright — text, dropdowns, radios, checkboxes, dates. Human-like delays to avoid detection.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Cache & Heal</h4>
+          <p>Save the genome and mapping. Next time, skip steps 1-3 entirely. If the form changes, self-heal and re-learn.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Grippy — Complaint guidance and live form automation.</p>
+    <p style="font-size:12px;color:#71717a;margin-top:8px;">Grippy is a complaint filing assistant. It does not provide legal advice. For legal matters, consult a qualified attorney.</p>
+  </footer>
+</body>
+</html>
